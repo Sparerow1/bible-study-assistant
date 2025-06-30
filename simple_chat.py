@@ -43,7 +43,7 @@ def main():
             
             # Get response with conversation memory
             print("AI: ", end="", flush=True)
-            response = bot.conversation_chat(user_input)
+            response = bot.setup_document_qa(user_input, )
             if isinstance(response, str):
                 print(response)
             elif hasattr(response, 'content'):
