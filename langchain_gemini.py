@@ -12,24 +12,28 @@ from langchain.memory import ConversationBufferMemory, ConversationSummaryMemory
 from langchain.schema import HumanMessage, SystemMessage, AIMessage
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import Chroma
+from langchain_pinecone import PineconeVectorStore
 from langchain.chains import RetrievalQA
 from langchain_community.document_loaders import TextLoader, DirectoryLoader
 from langchain.callbacks import StreamingStdOutCallbackHandler
 import asyncio
+import pinecone
 from pinecone import Pinecone, ServerlessSpec
+
 
 class GeminiLangChainBot:
     """
-    A comprehensive LangChain wrapper for Google Gemini AI.
+    A comprehensive LangChain wrapper for Google Gemini AI with Pinecone support.
     """
     
-    def __init__(self, api_key: Optional[str] = None, model_name: str = "gemini-2.5-flash"):
+    def __init__(self, api_key: Optional[str] = None, model_name: str = "gemini-2.5-flash", use_pinecone: bool = False):
 
         self.api_key = api_key or os.getenv("GOOGLE_API_KEY")
         if not self.api_key:
             raise ValueError("Google API key not found. Set GOOGLE_API_KEY environment variable or pass api_key parameter.")
         
         self.model_name = model_name
+        self.use_pinecone = use_pinecone
         
         # Initialize the chat model
         self.llm = ChatGoogleGenerativeAI(
@@ -47,6 +51,10 @@ class GeminiLangChainBot:
             google_api_key=self.api_key
         )
         
+        # Initialize Pinecone if requested
+        if self.use_pinecone:
+            self._setup_pinecone()
+        
         # Initialize memory for conversation
         self.memory = ConversationBufferMemory(return_messages=True)
         
@@ -56,6 +64,32 @@ class GeminiLangChainBot:
             memory=self.memory,
             verbose=True
         )
+    
+    def _setup_pinecone(self):
+        """Setup Pinecone client and configuration."""
+        self.pinecone_api_key = os.getenv("PINECONE_API_KEY")
+        self.pinecone_environment = os.getenv("PINECONE_ENVIRONMENT", "us-east-1-aws")
+        self.pinecone_index_name = os.getenv("PINECONE_INDEX_NAME", "langchain-gemini")
+        
+        if not self.pinecone_api_key:
+            raise ValueError("Pinecone API key not found. Set PINECONE_API_KEY environment variable.")
+        
+        # Initialize Pinecone
+        self.pc = Pinecone(api_key=self.pinecone_api_key)
+        
+        # Create index if it doesn't exist
+        if self.pinecone_index_name not in self.pc.list_indexes().names():
+            self.pc.create_index(
+                name=self.pinecone_index_name,
+                dimension=768,  # Dimension for Google's embedding model
+                metric="cosine",
+                spec=ServerlessSpec(
+                    cloud="aws",
+                    region=self.pinecone_environment
+                )
+            )
+        
+        self.pinecone_index = self.pc.Index(self.pinecone_index_name)
     
     def simple_chat(self, message: str) -> str:
         """
@@ -127,9 +161,9 @@ class GeminiLangChainBot:
         )
         return LLMChain(llm=self.llm, prompt=prompt)
     
-    def setup_document_qa(self, documents_path: str) -> RetrievalQA:
+    def setup_document_qa_chroma(self, documents_path: str) -> RetrievalQA:
         """
-        Set up a document Q&A system using vector embeddings.
+        Set up a document Q&A system using Chroma vector database.
         
         Args:
             documents_path: Path to directory containing text documents
@@ -164,6 +198,131 @@ class GeminiLangChainBot:
         )
         
         return qa_chain
+    
+    def setup_document_qa_pinecone(self, documents_path: str, namespace: str = "") -> RetrievalQA:
+        """
+        Set up a document Q&A system using Pinecone vector database.
+        
+        Args:
+            documents_path: Path to directory containing text documents
+            namespace: Pinecone namespace for organizing vectors
+            
+        Returns:
+            RetrievalQA chain for document question answering
+        """
+        if not self.use_pinecone:
+            raise ValueError("Pinecone not initialized. Set use_pinecone=True when creating the bot.")
+        
+        # Load documents
+        loader = DirectoryLoader(documents_path, glob="*.txt")
+        documents = loader.load()
+        
+        # Split documents into chunks
+        text_splitter = RecursiveCharacterTextSplitter(
+            chunk_size=1000,
+            chunk_overlap=200
+        )
+        texts = text_splitter.split_documents(documents)
+        
+        # Create Pinecone vector store
+        vectorstore = PineconeVectorStore.from_documents(
+            documents=texts,
+            embedding=self.embeddings,
+            index_name=self.pinecone_index_name,
+            namespace=namespace
+        )
+        
+        # Create retrieval QA chain
+        qa_chain = RetrievalQA.from_chain_type(
+            llm=self.llm,
+            chain_type="stuff",
+            retriever=vectorstore.as_retriever(search_kwargs={"k": 3}),
+            return_source_documents=True
+        )
+        
+        return qa_chain
+    
+    def add_documents_to_pinecone(self, documents_path: str, namespace: str = "") -> int:
+        """
+        Add documents to existing Pinecone index.
+        
+        Args:
+            documents_path: Path to directory containing text documents
+            namespace: Pinecone namespace for organizing vectors
+            
+        Returns:
+            Number of document chunks added
+        """
+        if not self.use_pinecone:
+            raise ValueError("Pinecone not initialized. Set use_pinecone=True when creating the bot.")
+        
+        # Load documents
+        loader = DirectoryLoader(documents_path, glob="*.txt")
+        documents = loader.load()
+        
+        # Split documents into chunks
+        text_splitter = RecursiveCharacterTextSplitter(
+            chunk_size=1000,
+            chunk_overlap=200
+        )
+        texts = text_splitter.split_documents(documents)
+        
+        # Add to existing Pinecone index
+        vectorstore = PineconeVectorStore(
+            index=self.pinecone_index,
+            embedding=self.embeddings,
+            namespace=namespace
+        )
+        
+        # Add documents
+        vectorstore.add_documents(texts)
+        
+        return len(texts)
+    
+    def search_pinecone(self, query: str, namespace: str = "", k: int = 3) -> List[Dict[str, Any]]:
+        """
+        Search Pinecone for similar documents.
+        
+        Args:
+            query: Search query
+            namespace: Pinecone namespace to search in
+            k: Number of results to return
+            
+        Returns:
+            List of similar documents with metadata
+        """
+        if not self.use_pinecone:
+            raise ValueError("Pinecone not initialized. Set use_pinecone=True when creating the bot.")
+        
+        vectorstore = PineconeVectorStore(
+            index=self.pinecone_index,
+            embedding=self.embeddings,
+            namespace=namespace
+        )
+        
+        results = vectorstore.similarity_search_with_score(query, k=k)
+        
+        formatted_results = []
+        for doc, score in results:
+            formatted_results.append({
+                "content": doc.page_content,
+                "metadata": doc.metadata,
+                "similarity_score": score
+            })
+        
+        return formatted_results
+    
+    def delete_pinecone_namespace(self, namespace: str):
+        """
+        Delete all vectors in a Pinecone namespace.
+        
+        Args:
+            namespace: Namespace to delete
+        """
+        if not self.use_pinecone:
+            raise ValueError("Pinecone not initialized. Set use_pinecone=True when creating the bot.")
+        
+        self.pinecone_index.delete(delete_all=True, namespace=namespace)
     
     async def async_chat(self, message: str) -> str:
         """
@@ -270,11 +429,38 @@ async def async_example():
         print(f"Async error: {e}")
 
 
+def pinecone_example():
+    """
+    Example usage with Pinecone vector database.
+    """
+    try:
+        # Initialize bot with Pinecone support
+        bot = GeminiLangChainBot(use_pinecone=True)
+        
+        print("=== Pinecone Vector Database Example ===")
+        
+        # Create a sample document directory (if you have documents)
+        # qa_chain = bot.setup_document_qa_pinecone("./documents", namespace="bible")
+        
+        # Search example (if you have documents loaded)
+        # results = bot.search_pinecone("What is love?", namespace="bible", k=3)
+        # for i, result in enumerate(results, 1):
+        #     print(f"Result {i} (Score: {result['similarity_score']:.3f}):")
+        #     print(f"Content: {result['content'][:200]}...")
+        #     print()
+        
+        print("Pinecone setup successful!")
+        
+    except Exception as e:
+        print(f"Error: {e}")
+
+
 if __name__ == "__main__":
-    # Set your Google API key here or as an environment variable
-    # os.environ["GOOGLE_API_KEY"] = "your-api-key-here"
+    # Set your API keys as environment variables
+    # os.environ["GOOGLE_API_KEY"] = "your-google-api-key"
+    # os.environ["PINECONE_API_KEY"] = "your-pinecone-api-key"
     
-    print("LangChain Gemini Integration Demo")
+    print("LangChain Gemini + Pinecone Integration Demo")
     print("=" * 50)
     
     # Run synchronous examples
@@ -283,3 +469,7 @@ if __name__ == "__main__":
     # Run asynchronous example
     print("\n=== Async Example ===")
     asyncio.run(async_example())
+    
+    # Run Pinecone example
+    print("\n=== Pinecone Example ===")
+    pinecone_example()
