@@ -16,7 +16,7 @@ from langchain.chains import RetrievalQA
 from langchain_community.document_loaders import TextLoader, DirectoryLoader
 from langchain.callbacks import StreamingStdOutCallbackHandler
 import asyncio
-
+from pinecone import Pinecone, ServerlessSpec
 
 class GeminiLangChainBot:
     """
