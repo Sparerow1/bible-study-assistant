@@ -11,16 +11,18 @@ from langchain.memory import ConversationBufferMemory
 
 def main():   
     #  Load environment variables and set up Pinecone
-    pinecone = Pinecone(api_key=os.getenv("PINECONE_API_KEY"), environment=os.getenv("PINECONE_ENVIRONMENT"))
+    pinecone = Pinecone(api_key=os.getenv("PINECONE_API_KEY"), 
+                        environment=os.getenv("PINECONE_ENVIRONMENT"))
 
     embedding_dimension = 768 
     index_name = os.getenv("PINECONE_INDEX_NAME", "biblebot-index")
     # Check if index exists, and create if not
     if index_name not in pinecone.list_indexes():
-        pc.create_index(
+        pinecone.create_index(
             name=index_name,
             dimension=embedding_dimension,
             metric="cosine",  # Or other appropriate metric
+            spec={"replicas": 1, "shards": 1}  # Adjust as needed
         )
     # Connect to the Pinecone index
     index = pinecone.Index(index_name)
