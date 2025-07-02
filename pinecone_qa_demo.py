@@ -36,7 +36,7 @@ def main():
     texts = text_splitter.split_documents(documents)
 
     embeddings = GoogleGenerativeAIEmbeddings(
-        model="models/text-embedding-001",  # Specify the embedding model
+        model="models/embeddings-001",  # Specify the embedding model
         google_api_key=os.getenv("GOOGLE_API_KEY")  # Load API key from environment
     )
 
