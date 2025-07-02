@@ -176,7 +176,9 @@ Answer:"""
         llm=bot.llm,  # Use the LLM from your bot
         retriever=retriever,
         memory=memory,
+        verbose=True,
         return_source_documents=True,
+        combine_docs_chain_kwargs={"prompt": custom_prompt},
     )
 
     # 4. Interactive Bible Q&A
