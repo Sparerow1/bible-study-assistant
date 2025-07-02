@@ -11,8 +11,7 @@ from langchain.chains import LLMChain, ConversationChain
 from langchain.memory import ConversationBufferMemory, ConversationSummaryMemory
 from langchain.schema import HumanMessage, SystemMessage, AIMessage
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-from langchain_community.vectorstores import Chroma
-from langchain_pinecone import PineconeVectorStore
+from langchain_community.vectorstores import Chroma, Pinecone as PineconeVectorStore
 from langchain.chains import RetrievalQA
 from langchain_community.document_loaders import TextLoader, DirectoryLoader
 from langchain.callbacks import StreamingStdOutCallbackHandler

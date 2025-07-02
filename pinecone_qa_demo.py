@@ -10,8 +10,21 @@ from pinecone import Pinecone
 from langchain.chains import ConversationalRetrievalChain
 from langchain.memory import ConversationBufferMemory
 
-#  Load environment variables
+#  Load environment variables and set up Pinecone
 pinecone = Pinecone(api_key=os.getenv("PINECONE_API_KEY"), environment=os.getenv("PINECONE_ENVIRONMENT"))
+
+embedding_dimension = 768 
+index_name = os.getenv("PINECONE_INDEX_NAME", "biblebot-index")
+# Check if index exists, and create if not
+if index_name not in pinecone.list_indexes():
+    pc.create_index(
+        name=index_name,
+        dimension=embedding_dimension,
+        metric="cosine",  # Or other appropriate metric
+    )
+# Connect to the Pinecone index
+index = pinecone.Index(index_name)
+
 
 # 1. Document Loading and Processing
 loader = TextLoader("./bible_read.txt")  # Load your document
@@ -26,8 +39,7 @@ embeddings = GoogleGenerativeAIEmbeddings(
 )
 
 # 2. Vector Store Setup
-vector_store = Chroma.from_documents(texts, embeddings)
-retriever = vector_store.as_retriever()
+
 
 # 3.  Conversational Retrieval Chain Implementation
 llm = GeminiLangChainBot()
