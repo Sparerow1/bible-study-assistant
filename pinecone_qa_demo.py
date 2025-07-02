@@ -22,7 +22,7 @@ def main():
             name=index_name,
             dimension=embedding_dimension,
             metric="cosine",  # Or other appropriate metric
-            spec={"replicas": 1, "shards": 1}  # Adjust as needed
+            spec="serverless" # Adjust as needed
         )
     # Connect to the Pinecone index
     index = pinecone.Index(index_name)
