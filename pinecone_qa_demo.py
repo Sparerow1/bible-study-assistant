@@ -1,5 +1,3 @@
-
-
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from langchain_gemini import GeminiLangChainBot
 import os
@@ -7,6 +5,7 @@ from dotenv import load_dotenv
 from langchain.document_loaders import TextLoader  # Example document loader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from pinecone import Pinecone
+from langchain_pinecone import PineconeVectorStore
 from langchain.chains import ConversationalRetrievalChain
 from langchain.memory import ConversationBufferMemory
 
@@ -38,8 +37,15 @@ embeddings = GoogleGenerativeAIEmbeddings(
     google_api_key=os.getenv("GOOGLE_API_KEY")  # Load API key from environment
 )
 
-# 2. Vector Store Setup
+# 2. Vector Store Upsert to Pinecone
+PineconeVectorStore.from_documents(
+    texts,
+    embeddings,
+    index_name=index_name,
+)
 
+# Create a retriever from the Pinecone index
+retriever = PineconeVectorStore(index_name=index_name, embedding=embeddings).as_retriever()
 
 # 3.  Conversational Retrieval Chain Implementation
 llm = GeminiLangChainBot()
