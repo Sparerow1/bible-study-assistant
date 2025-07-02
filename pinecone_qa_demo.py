@@ -4,7 +4,7 @@ import os
 from dotenv import load_dotenv
 from langchain.document_loaders import TextLoader  # Example document loader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from pinecone import Pinecone
+from pinecone import Pinecone, ServerlessSpec
 from langchain_pinecone import PineconeVectorStore
 from langchain.chains import ConversationalRetrievalChain
 from langchain.memory import ConversationBufferMemory
@@ -22,7 +22,7 @@ def main():
             name=index_name,
             dimension=embedding_dimension,
             metric="cosine",  # Or other appropriate metric
-            spec="serverless" # Adjust as needed
+            spec=ServerlessSpec(cloud="aws", region="us-east-1")
         )
     # Connect to the Pinecone index
     index = pinecone.Index(index_name)
