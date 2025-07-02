@@ -99,8 +99,9 @@ def main():
 
     print(f"📝 Splitting text into chunks...")
     text_splitter = RecursiveCharacterTextSplitter(
-        chunk_size=800,  # Smaller chunks to reduce batch size
-        chunk_overlap=100
+        chunk_size=1500,  # Smaller chunks to reduce batch size
+        chunk_overlap=300,
+        separators=["\n\n", "\n", ". ", " ", ""] 
     )
     texts = text_splitter.split_documents(documents)
     print(f"✅ Created {len(texts)} text chunks")
@@ -132,7 +133,8 @@ def main():
         )
 
     # Create a retriever from the Pinecone index
-    retriever = vectorstore.as_retriever(search_kwargs={"k": 3})
+    retriever = vectorstore.as_retriever(search_kwargs={"k": 15, 
+                                                        "score_threshold": 0.7})
 
     # 3. Conversational Retrieval Chain Implementation
     print("🤖 Initializing Gemini LLM...")
