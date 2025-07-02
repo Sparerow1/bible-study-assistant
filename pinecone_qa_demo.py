@@ -134,8 +134,8 @@ def main():
         )
 
     # Create a retriever from the Pinecone index
-    retriever = vectorstore.as_retriever(search_kwargs={"k": 15, 
-                                                        "score_threshold": 0.7})
+    retriever = vectorstore.as_retriever(search_kwargs={"k": 15},
+                                         search_type="similarity",)
 
     # 3. Conversational Retrieval Chain Implementation
     print("🤖 Initializing Gemini LLM...")
