@@ -48,7 +48,10 @@ PineconeVectorStore.from_documents(
 retriever = PineconeVectorStore(index_name=index_name, embedding=embeddings).as_retriever()
 
 # 3.  Conversational Retrieval Chain Implementation
-llm = GeminiLangChainBot()
+llm = GeminiLangChainBot(model_name="gemini-1.5-flash",  # Specify the LLM model
+                         api_key=os.getenv("GOOGLE_API_KEY"),
+                         temperature=0.7,
+                         convert_system_to_human=True)
 memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
 
 qa_chain = ConversationalRetrievalChain.from_llm(
