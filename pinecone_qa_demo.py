@@ -8,6 +8,7 @@ from pinecone import Pinecone, ServerlessSpec
 from langchain_pinecone import PineconeVectorStore
 from langchain.chains import ConversationalRetrievalChain
 from langchain.memory import ConversationBufferMemory
+from langchain.prompts import PromptTemplate
 import time
 
 def upload_documents_in_batches(texts, embeddings, index_name, batch_size=50):
@@ -144,6 +145,31 @@ def main():
         memory_key="chat_history", 
         return_messages=True,
         output_key="answer"  # Important for ConversationalRetrievalChain
+    )
+
+    custom_prompt = PromptTemplate(
+        input_variables=["context", "chat_history", "question"],
+        template="""You are a knowledgeable Bible scholar and teacher. Your role is to provide comprehensive, thoughtful, and spiritually enriching answers about the Bible and Christian faith.
+
+Use the following Biblical passages and context to answer the question. Provide a detailed, well-structured response that includes:
+
+1. Direct answer to the question
+2. Relevant Bible verses and references
+3. Historical and cultural context when applicable
+4. Practical application or spiritual insight
+5. Cross-references to related Biblical concepts
+
+Biblical Context:
+{context}
+
+Previous Conversation:
+{chat_history}
+
+Question: {question}
+
+Please provide a comprehensive answer that would be helpful for someone seeking to understand God's Word better. Include specific verse references and explain the meaning in a clear, accessible way.
+
+Answer:"""
     )
 
     qa_chain = ConversationalRetrievalChain.from_llm(
