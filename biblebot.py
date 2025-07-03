@@ -240,8 +240,8 @@ def main():
                 sources = result["source_documents"]
                 print(f"\n📚 Biblical References ({len(sources)}):")
                 for i, doc in enumerate(sources, 1):
-                    content_preview = doc.page_content[:200].replace('\n', ' ').strip()
-                    print(f"  {i}. {content_preview}...")
+                    content_preview = doc.page_content
+                    print(f"  {i}. {content_preview}")
             
         except KeyboardInterrupt:
             print("\n👋 Goodbye!")
