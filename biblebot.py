@@ -239,7 +239,7 @@ def main():
             if "source_documents" in result and result["source_documents"]:
                 sources = result["source_documents"]
                 print(f"\n📚 Biblical References ({len(sources)}):")
-                for i, doc in enumerate(sources[:2], 1):
+                for i, doc in enumerate(sources, 1):
                     content_preview = doc.page_content[:200].replace('\n', ' ').strip()
                     print(f"  {i}. {content_preview}...")
             
