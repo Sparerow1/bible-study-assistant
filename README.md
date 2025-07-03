@@ -9,7 +9,6 @@ This project demonstrates how to use Google's Gemini AI model with LangChain in 
 - Custom system prompts
 - Prompt templates
 - Document Q&A with vector embeddings
-- Asynchronous chat support
 - Streaming responses
 
 ## Setup
@@ -39,10 +38,21 @@ Edit `.env` and replace `your_google_api_key_here` with your actual API key:
 ```
 GOOGLE_API_KEY=your_actual_api_key_here
 ```
+If you are using Chroma, ignore the next step. Follow only if you are using Pinecone for vector database.
 
+```
+# Get your Pinecone API key from: https://app.pinecone.io/
+PINECONE_API_KEY=your_pinecone_api_key_here
+
+# Pinecone environment (region) - check your Pinecone dashboard
+PINECONE_ENVIRONMENT=us-east-1-aws
+
+# Pinecone index name (will be created automatically)
+PINECONE_INDEX_NAME=langchain-gemini
+```
 ## Usage
 
-### Simple Chat
+### Bible Chat
 
 Run the interactive chat script:
 
@@ -50,73 +60,9 @@ Run the interactive chat script:
 python biblebot.py
 ```
 
-### Advanced Usage
-
-The main `langchain_gemini.py` file contains a comprehensive `GeminiLangChainBot` class with the following features:
-
-```python
-from langchain_gemini import GeminiLangChainBot
-
-# Initialize the bot
-bot = GeminiLangChainBot()
-
-# Simple chat
-response = bot.simple_chat("Hello, how are you?")
-
-# Chat with system prompt
-response = bot.chat_with_system_prompt(
-    "Explain quantum physics", 
-    "You are a physics professor"
-)
-
-# Conversation with memory
-bot.conversation_chat("My name is Alice")
-response = bot.conversation_chat("What's my name?")
-
-# Document Q&A (requires text files in a directory)
-qa_chain = bot.setup_document_qa("./documents")
-result = qa_chain({"query": "What is the main topic?"})
-```
-
-### Custom Prompt Templates
-
-```python
-template = """
-You are an expert {field} tutor. 
-Explain {concept} to a beginner.
-
-Concept: {concept}
-Field: {field}
-
-Explanation:
-"""
-
-chain = bot.create_prompt_template_chain(template, ["field", "concept"])
-response = chain.run(field="programming", concept="variables")
-```
-
-## Available Methods
-
-### GeminiLangChainBot Class
-
-- `simple_chat(message)` - Basic chat without memory
-- `chat_with_system_prompt(message, system_prompt)` - Chat with custom system prompt
-- `conversation_chat(message)` - Chat with conversation memory
-- `create_prompt_template_chain(template, variables)` - Create custom prompt chains
-- `setup_document_qa(documents_path)` - Set up document Q&A system
-- `async_chat(message)` - Asynchronous chat
-- `clear_memory()` - Clear conversation memory
-- `get_conversation_history()` - Get chat history
-
-## Models Available
-
-- `gemini-pro` - Text generation (default)
-- `gemini-pro-vision` - Text and image understanding
-- `models/embedding-001` - Text embeddings
-
 ## Configuration Options
 
-When initializing `GeminiLangChainBot`, you can customize:
+When initializing the llm object, you can pass in the following options:
 
 ```python
 bot = GeminiLangChainBot(
