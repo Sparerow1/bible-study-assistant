@@ -47,7 +47,7 @@ GOOGLE_API_KEY=your_actual_api_key_here
 Run the interactive chat script:
 
 ```bash
-python simple_chat.py
+python biblebot.py
 ```
 
 ### Advanced Usage
@@ -167,7 +167,3 @@ If you hit rate limits, you can:
 2. Implement retry logic
 3. Check your API quota in Google AI Studio
 
-## License
-
-This project is for educational purposes. Check Google's terms of service for commercial use.
-# biblebot
