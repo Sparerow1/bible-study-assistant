@@ -1,10 +1,8 @@
 from langchain_google_genai import ChatGoogleGenerativeAI, GoogleGenerativeAIEmbeddings
 import os
-import sys
-from typing import Optional, List, Dict, Any
 from dotenv import load_dotenv
-from langchain_community.document_loaders import TextLoader
-from langchain_text_splitters import RecursiveCharacterTextSplitter
+from langchain_community.document_loaders import TextLoader  # Fixed import
+from langchain_text_splitters import RecursiveCharacterTextSplitter  # Fixed import
 from pinecone import Pinecone, ServerlessSpec
 from langchain_pinecone import PineconeVectorStore
 from langchain.chains import ConversationalRetrievalChain
@@ -12,219 +10,44 @@ from langchain.memory import ConversationBufferMemory
 from langchain.callbacks import StreamingStdOutCallbackHandler
 from langchain.prompts import PromptTemplate
 import time
-import traceback
 
-
-class BibleBotError(Exception):
-    """Custom exception for Bible Bot errors."""
-    pass
-
-
-class EnvironmentValidator:
-    """Validates environment variables and setup."""
+def upload_documents_in_batches(texts, embeddings, index_name, batch_size=50):
+    """Upload documents to Pinecone in smaller batches to avoid size limits."""
+    total_batches = (len(texts) + batch_size - 1) // batch_size
+    print(f"📊 Uploading {len(texts)} documents in {total_batches} batches of {batch_size}...")
     
-    REQUIRED_VARS = [
-        "GOOGLE_API_KEY",
-        "PINECONE_API_KEY", 
-        "PINECONE_ENVIRONMENT",
-        "PINECONE_INDEX_NAME"
-    ]
+    vectorstore = None
     
-    @classmethod
-    def validate(cls) -> bool:
-        """Validate that all required environment variables are set."""
-        missing_vars = [var for var in cls.REQUIRED_VARS if not os.getenv(var)]
+    for i in range(0, len(texts), batch_size):
+        batch = texts[i:i + batch_size]
+        batch_num = (i // batch_size) + 1
         
-        if missing_vars:
-            print("❌ Missing required environment variables:")
-            for var in missing_vars:
-                print(f"   • {var}")
-            print("\n💡 Please check your .env file and ensure all variables are set.")
-            return False
-        
-        print("✅ All environment variables validated!")
-        return True
-
-
-class DocumentManager:
-    """Handles document loading, processing, and validation."""
-    
-    def __init__(self, file_path: str = "./bible_read.txt"):
-        self.file_path = file_path
-        self.documents = None
-        self.text_chunks = None
-    
-    def validate_file(self) -> bool:
-        """Check if the Bible text file exists and is readable."""
-        if not os.path.exists(self.file_path):
-            print(f"❌ Error: {self.file_path} not found!")
-            print("💡 Please ensure the Bible text file is in the current directory.")
-            print(f"   Expected location: {os.path.abspath(self.file_path)}")
-            return False
+        print(f"⏳ Processing batch {batch_num}/{total_batches} ({len(batch)} documents)...")
         
         try:
-            with open(self.file_path, 'r', encoding='utf-8') as f:
-                f.read(100)
-            print(f"✅ Bible text file found and readable: {self.file_path}")
-            return True
-        except UnicodeDecodeError:
-            print(f"❌ File encoding error: {self.file_path}")
-            print("💡 Please ensure the file is saved in UTF-8 encoding.")
-            return False
-        except Exception as e:
-            print(f"❌ Error reading file {self.file_path}: {e}")
-            return False
-    
-    def load_documents(self) -> bool:
-        """Load documents from the file."""
-        try:
-            print("📖 Loading Bible text...")
-            loader = TextLoader(self.file_path)
-            self.documents = loader.load()
-            
-            if not self.documents:
-                raise BibleBotError("No documents loaded!")
-            
-            file_size = os.path.getsize(self.file_path)
-            print(f"📁 File size: {file_size / 1024 / 1024:.1f} MB")
-            print(f"📄 Loaded {len(self.documents)} document(s)")
-            return True
-            
-        except Exception as e:
-            print(f"❌ Error loading documents: {e}")
-            return False
-    
-    def split_documents(self, chunk_size: int = 1500, chunk_overlap: int = 300) -> bool:
-        """Split documents into chunks."""
-        if not self.documents:
-            print("❌ No documents to split! Load documents first.")
-            return False
-        
-        try:
-            print("📝 Splitting text into chunks...")
-            text_splitter = RecursiveCharacterTextSplitter(
-                chunk_size=chunk_size,
-                chunk_overlap=chunk_overlap,
-                separators=["\n\n", "\n", ". ", " ", ""]
-            )
-            
-            self.text_chunks = text_splitter.split_documents(self.documents)
-            
-            if not self.text_chunks:
-                raise BibleBotError("No text chunks created!")
-            
-            print(f"✅ Created {len(self.text_chunks)} text chunks")
-            return True
-            
-        except Exception as e:
-            print(f"❌ Error splitting documents: {e}")
-            return False
-
-
-class PineconeManager:
-    """Manages Pinecone vector database operations."""
-    
-    def __init__(self, api_key: str, index_name: str, dimension: int = 768):
-        self.api_key = api_key
-        self.index_name = index_name
-        self.dimension = dimension
-        self.pinecone_client = None
-        self.index = None
-        self.vectorstore = None
-    
-    def initialize(self) -> bool:
-        """Initialize Pinecone client and index."""
-        try:
-            print("🔧 Initializing Pinecone...")
-            self.pinecone_client = Pinecone(api_key=self.api_key)
-            print("✅ Pinecone client initialized!")
-            
-            return self._setup_index()
-            
-        except Exception as e:
-            print(f"❌ Pinecone initialization failed: {e}")
-            return False
-    
-    def _setup_index(self) -> bool:
-        """Setup or connect to Pinecone index."""
-        try:
-            existing_indexes = [index.name for index in self.pinecone_client.list_indexes()]
-            print(f"📋 Found {len(existing_indexes)} existing indexes")
-            
-            if self.index_name not in existing_indexes:
-                print(f"📊 Creating new Pinecone index: {self.index_name}")
-                self.pinecone_client.create_index(
-                    name=self.index_name,
-                    dimension=self.dimension,
-                    metric="cosine",
-                    spec=ServerlessSpec(cloud="aws", region="us-east-1")
+            if vectorstore is None:
+                # First batch - create the vectorstore
+                vectorstore = PineconeVectorStore.from_documents(
+                    batch,
+                    embeddings,
+                    index_name=index_name,
                 )
-                print("✅ Index created successfully!")
             else:
-                print(f"✅ Using existing index: {self.index_name}")
+                # Subsequent batches - add to existing vectorstore
+                vectorstore.add_documents(batch)
             
-            self.index = self.pinecone_client.Index(self.index_name)
-            stats = self.index.describe_index_stats()
-            print(f"📊 Index stats: {stats.total_vector_count} vectors")
-            return True
+            print(f"✅ Batch {batch_num} uploaded successfully!")
             
-        except Exception as e:
-            if "ALREADY_EXISTS" in str(e):
-                print(f"✅ Index '{self.index_name}' already exists, continuing...")
-                self.index = self.pinecone_client.Index(self.index_name)
-                return True
-            else:
-                print(f"❌ Error setting up index: {e}")
-                return False
-    
-    def get_vector_count(self) -> int:
-        """Get current vector count in the index."""
-        if not self.index:
-            return 0
-        try:
-            stats = self.index.describe_index_stats()
-            return stats.total_vector_count
-        except Exception as e:
-            print(f"❌ Error getting vector count: {e}")
-            return 0
-    
-    def upload_documents_in_batches(self, texts: List, embeddings, batch_size: int = 30) -> bool:
-        """Upload documents to Pinecone in smaller batches to avoid size limits."""
-        total_batches = (len(texts) + batch_size - 1) // batch_size
-        print(f"📊 Uploading {len(texts)} documents in {total_batches} batches of {batch_size}...")
-        
-        vectorstore = None
-        
-        for i in range(0, len(texts), batch_size):
-            batch = texts[i:i + batch_size]
-            batch_num = (i // batch_size) + 1
-            
-            print(f"⏳ Processing batch {batch_num}/{total_batches} ({len(batch)} documents)...")
-            
-            try:
-                if vectorstore is None:
-                    # First batch - create the vectorstore
-                    vectorstore = PineconeVectorStore.from_documents(
-                        batch,
-                        embeddings,
-                        index_name=self.index_name,
-                    )
-                else:
-                    # Subsequent batches - add to existing vectorstore
-                    vectorstore.add_documents(batch)
+            # Small delay to avoid rate limiting
+            if batch_num < total_batches:
+                time.sleep(1)
                 
-                print(f"✅ Batch {batch_num} uploaded successfully!")
-                
-                # Small delay to avoid rate limiting
-                if batch_num < total_batches:
-                    time.sleep(1)
-                    
-            except Exception as e:
-                print(f"❌ Error uploading batch {batch_num}: {e}")
-                return None
-        
-        print("🎉 All documents uploaded successfully!")
-        return vectorstore
+        except Exception as e:
+            print(f"❌ Error uploading batch {batch_num}: {e}")
+            return None
+    
+    print("🎉 All documents uploaded successfully!")
+    return vectorstore
 
 def main():   
     load_dotenv()  # Load environment variables from .env file
