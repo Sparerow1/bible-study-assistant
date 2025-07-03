@@ -1,5 +1,4 @@
-from langchain_google_genai import GoogleGenerativeAIEmbeddings
-from langchain_gemini import GeminiLangChainBot
+from langchain_google_genai import ChatGoogleGenerativeAI, GoogleGenerativeAIEmbeddings
 import os
 from dotenv import load_dotenv
 from langchain_community.document_loaders import TextLoader  # Fixed import
@@ -8,6 +7,7 @@ from pinecone import Pinecone, ServerlessSpec
 from langchain_pinecone import PineconeVectorStore
 from langchain.chains import ConversationalRetrievalChain
 from langchain.memory import ConversationBufferMemory
+from langchain.callbacks import StreamingStdOutCallbackHandler
 from langchain.prompts import PromptTemplate
 import time
 
@@ -139,7 +139,13 @@ def main():
 
     # 3. Conversational Retrieval Chain Implementation
     print("🤖 Initializing Gemini LLM...")
-    bot = GeminiLangChainBot()  # Use your existing bot class properly
+    llm = ChatGoogleGenerativeAI(
+        google_api_key=os.getenv("GOOGLE_API_KEY"),
+        streaming=True,
+        convert_system_message_to_human=True,
+        model="gemini-2.5-flash", 
+        temperature=0.7, 
+        callbacks=[StreamingStdOutCallbackHandler()])
     
     memory = ConversationBufferMemory(
         memory_key="chat_history", 
@@ -175,7 +181,7 @@ def main():
     )
 
     qa_chain = ConversationalRetrievalChain.from_llm(
-        llm=bot.llm,  # Use the LLM from your bot
+        llm=llm,  # Use the LLM from your bot
         retriever=retriever,
         memory=memory,
         verbose=True,
