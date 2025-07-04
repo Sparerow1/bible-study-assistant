@@ -5,9 +5,9 @@ from typing import List
 from dotenv import load_dotenv
 from langchain_pinecone import PineconeVectorStore
 from config_package.config_setup_class import BibleQAConfig, EnvironmentValidator
-from src.config_package import PineconeManager
-from src.vector_store_package import DocumentProcessor
-from src.llm_package.llm_manager import LLMManager
+from config_package.setup_pinecone import PineconeManager
+from vector_store_package.vector_store import DocumentProcessor
+from llm_package.llm_manager import LLMManager
 
 
 class BibleQASystem:
