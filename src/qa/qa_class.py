@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 from langchain_pinecone import PineconeVectorStore
 from config.config_setup_class import BibleQAConfig, EnvironmentValidator
 from config.setup_pinecone import PineconeManager
-from vector_store_package.vector_store import DocumentProcessor
+from core.vector_store import DocumentProcessor
 from llm.llm_manager import LLMManager
 
 

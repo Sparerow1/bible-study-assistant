@@ -1,7 +1,7 @@
 import os
 import sys
 import traceback
-from qa_package.qa_class import BibleQASystem
+from qa.qa_class import BibleQASystem
 
 
 def main():
