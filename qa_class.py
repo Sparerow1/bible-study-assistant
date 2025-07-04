@@ -1,5 +1,13 @@
+import os
+import sys
+import traceback
+from typing import List
 from dotenv import load_dotenv
-from config_setup_class import BibleQAConfig
+from langchain_pinecone import PineconeVectorStore
+from config_setup_class import BibleQAConfig, EnvironmentValidator
+from setup_pinecone import PineconeManager
+from vector_store import DocumentProcessor
+from llm_manager import LLMManager
 
 
 class BibleQASystem:
