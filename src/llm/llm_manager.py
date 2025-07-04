@@ -3,7 +3,7 @@ from langchain.callbacks import StreamingStdOutCallbackHandler
 from langchain.memory import ConversationBufferMemory
 from langchain.chains import ConversationalRetrievalChain
 from langchain.prompts import PromptTemplate
-from config_package.config_setup_class import BibleQAConfig
+from config.config_setup_class import BibleQAConfig
 from typing import Optional, List, Dict, Any
 
 class LLMManager:

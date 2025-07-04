@@ -4,10 +4,10 @@ import traceback
 from typing import List
 from dotenv import load_dotenv
 from langchain_pinecone import PineconeVectorStore
-from config_package.config_setup_class import BibleQAConfig, EnvironmentValidator
-from config_package.setup_pinecone import PineconeManager
+from config.config_setup_class import BibleQAConfig, EnvironmentValidator
+from config.setup_pinecone import PineconeManager
 from vector_store_package.vector_store import DocumentProcessor
-from llm_package.llm_manager import LLMManager
+from llm.llm_manager import LLMManager
 
 
 class BibleQASystem:

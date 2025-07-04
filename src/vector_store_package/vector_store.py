@@ -3,7 +3,7 @@ from langchain_google_genai import ChatGoogleGenerativeAI, GoogleGenerativeAIEmb
 from langchain_community.document_loaders import TextLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_pinecone import PineconeVectorStore
-from config_package.config_setup_class import BibleQAConfig
+from config.config_setup_class import BibleQAConfig
 import os
 import time
 
