@@ -219,7 +219,7 @@ class BibleQASystem:
                 print(f"\n📖 Source {i}:")
                 print("-" * 30)
                 content = doc.page_content.strip()
-                print(content)
+                print(content[100:200] + ("..." if len(content) > 200 else ""))
                 
                 # Show metadata if available
                 if hasattr(doc, 'metadata') and doc.metadata:
