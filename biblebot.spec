@@ -26,6 +26,37 @@ if main_script is None:
 
 print(f"Using main script: {main_script}")
 
+# Prepare data files - only include existing files
+datas_list = []
+
+# Check and add data files
+data_files = [
+    ('src/bible_read.txt', '.'),
+    ('bible_read.txt', '.'),
+    ('.env.example', '.'),
+    ('README.md', '.'),
+]
+
+for src, dst in data_files:
+    if (current_dir / src).exists():
+        datas_list.append((src, dst))
+        print(f"Including data file: {src}")
+
+# Check and add Python packages
+package_dirs = [
+    ('src/config_package', 'config_package/'),
+    ('src/llm_package', 'llm_package/'),
+    ('src/vector_store_package', 'vector_store_package/'),
+    ('src/qa_package', 'qa_package/'),
+]
+
+for src, dst in package_dirs:
+    if (current_dir / src).exists():
+        datas_list.append((src, dst))
+        print(f"Including package: {src}")
+
+print(f"Total data items to include: {len(datas_list)}")
+
 # Define the main analysis
 a = Analysis(
     [main_script],                     # Use the found script
@@ -34,19 +65,7 @@ a = Analysis(
         str(current_dir / 'src'),      # src directory
     ],
     binaries=[],
-    datas=[
-        # Include data files (check if they exist first)
-        ('src/bible_read.txt', '.') if (current_dir / 'src/bible_read.txt').exists() else None,
-        ('bible_read.txt', '.') if (current_dir / 'bible_read.txt').exists() else None,
-        ('.env.example', '.') if (current_dir / '.env.example').exists() else None,
-        ('README.md', '.') if (current_dir / 'README.md').exists() else None,
-        
-        # Include Python packages if they exist
-        ('src/config_package', 'config_package/') if (current_dir / 'src/config_package').exists() else None,
-        ('src/llm_package', 'llm_package/') if (current_dir / 'src/llm_package').exists() else None,
-        ('src/vector_store_package', 'vector_store_package/') if (current_dir / 'src/vector_store_package').exists() else None,
-        ('src/qa_package', 'qa_package/') if (current_dir / 'src/qa_package').exists() else None,
-    ],
+    datas=datas_list,                  # Use the pre-filtered list
     hiddenimports=[
         # Core LangChain imports
         'langchain',
@@ -127,9 +146,6 @@ a = Analysis(
     noarchive=False,
 )
 
-# Filter out None values from datas
-a.datas = [item for item in a.datas if item is not None]
-
 # Create the PYZ archive
 pyz = PYZ(a.pure, a.zipped_data, cipher=block_cipher)
 
@@ -145,7 +161,7 @@ exe = EXE(
     debug=False,                        # Set to True for debugging
     bootloader_ignore_signals=False,
     strip=False,
-    upx=True,                          # Compress with UPX (reduces size)
+    upx=False,                         # Disable UPX compression (can cause issues on Linux/WSL)
     upx_exclude=[],
     runtime_tmpdir=None,
     console=True,                      # Console application
@@ -153,6 +169,5 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
-    icon='assets/icon.ico' if (current_dir / 'assets/icon.ico').exists() else None,
-    version='version_info.txt' if (current_dir / 'version_info.txt').exists() else None,
+    # Remove icon and version for Linux/WSL compatibility
 )
