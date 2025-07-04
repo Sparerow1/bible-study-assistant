@@ -13,7 +13,7 @@ class BibleQAConfig:
         self.llm_temperature = 0.7
         self.llm_model = "gemini-2.5-flash"
         self.embedding_model = "models/embedding-001"
-        self.bible_file_path = "./bible_read.txt"
+        self.bible_file_path = "data/bible_read.txt"
         self.text_separators = ["\n\n", "\n", ". ", " ", ""]
         
     @classmethod
