@@ -21,6 +21,17 @@ jobs:
         echo "PINECONE_ENVIRONMENT=${{ secrets.PINECONE_ENVIRONMENT }}" >> .env
       shell: bash
     
+    - name: Verify .env file exists
+      run: |
+        if (Test-Path .env) { 
+          Write-Host ".env file created successfully"
+          Get-Content .env
+        } else { 
+          Write-Host ".env file not found!"
+          exit 1
+        }
+      shell: powershell
+    
     - name: Install dependencies
       run: |
         pip install -r requirements.txt
