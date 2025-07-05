@@ -28,23 +28,41 @@ a = Analysis(
         'core.vector_store',
         'llm',
         'llm.llm_manager',
+        # LangChain core
         'langchain',
+        'langchain.callbacks',
+        'langchain.memory',
+        'langchain.chains',
+        'langchain.prompts',
         'langchain_google_genai',
         'langchain_pinecone',
         'langchain_community',
         'langchain_text_splitters',
+        # Pinecone
         'pinecone',
         'pinecone.core',
         'pinecone.utils',
         'pinecone.utils.version',
-        'chromadb',
+        # Google AI
         'google.generativeai',
+        'chromadb',
+        # Standard libraries that might need explicit import
         'dotenv',
-        # Additional hidden imports for dependencies
+        'os',
+        'sys',
+        'traceback',
+        'typing',
+        # Network and data handling
         'urllib3',
         'requests',
         'certifi',
         'typing_extensions',
+        # Additional LangChain components
+        'langchain.callbacks.base',
+        'langchain.callbacks.streaming_stdout',
+        'langchain.memory.buffer',
+        'langchain.chains.conversational_retrieval',
+        'langchain.prompts.prompt',
     ],
     hookspath=[],
     hooksconfig={},
