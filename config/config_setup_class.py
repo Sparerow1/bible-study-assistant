@@ -1,5 +1,4 @@
 import os
-from core.vector_store import DocumentProcessor
 
 
 class BibleQAConfig:
