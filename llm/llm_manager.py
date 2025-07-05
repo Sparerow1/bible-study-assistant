@@ -1,10 +1,10 @@
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain.callbacks import StreamingStdOutCallbackHandler
 from langchain.memory import ConversationBufferMemory
-from langchain.chains import ConversationalRetrievalChain
+from langchain.chains.conversational_retrieval.base import ConversationalRetrievalChain
 from langchain.prompts import PromptTemplate
 from config.config_setup_class import BibleQAConfig
-from typing import Optional, List, Dict, Any
+from typing import Optional, Dict, Any
 
 class LLMManager:
     """Manages the Language Model and conversation chain."""
