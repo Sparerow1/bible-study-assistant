@@ -4,6 +4,7 @@ from langchain_community.document_loaders import TextLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_pinecone import PineconeVectorStore
 from config.config_setup_class import BibleQAConfig
+from validate.validation import Validation
 import os
 import sys
 import time
@@ -33,20 +34,6 @@ class DocumentProcessor:
             print(f"❌ Embeddings initialization failed: {e}")
             print("💡 Please check your GOOGLE_API_KEY and internet connection.")
             return False
-    
-    def get_resource_path(relative_path):
-        """Get absolute path to resource, works for dev and for PyInstaller"""
-        try:
-            # PyInstaller creates a temp folder and stores path in _MEIPASS
-            base_path = sys._MEIPASS
-            print(f"Running from PyInstaller temp dir: {base_path}")
-        except Exception:
-            base_path = os.path.abspath(".")
-            print(f"Running from source: {base_path}")
-
-        full_path = os.path.join(base_path, relative_path)
-        print(f"Looking for data file at: {full_path}")
-        return full_path
 
     def load_and_split_documents(self, filepath: str) -> Optional[List]:
         """Load and split documents from file."""
