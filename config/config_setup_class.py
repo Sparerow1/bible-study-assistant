@@ -1,4 +1,5 @@
 import os
+from core.vector_store import DocumentProcessor
 
 
 class BibleQAConfig:
@@ -59,16 +60,17 @@ class EnvironmentValidator:
     @classmethod
     def validate_file(cls, filepath: str) -> bool:
         """Check if the required Bible text file exists and is readable."""
-        if not os.path.exists(filepath):
-            print(f"❌ Error: {filepath} not found!")
+        data_file = DocumentProcessor.get_resource_path(filepath)
+        if not os.path.exists(data_file):
+            print(f"❌ Error: {data_file} not found!")
             print("💡 Please ensure the Bible text file is in the current directory.")
             print(f"   Expected location: {os.path.abspath(filepath)}")
             return False
         
         try:
-            with open(filepath, 'r', encoding='utf-8') as f:
+            with open(data_file, 'r', encoding='utf-8') as f:
                 f.read(100)  # Try to read first 100 chars
-            print(f"✅ Bible text file found and readable: {filepath}")
+            print(f"✅ Bible text file found and readable: {data_file}")
             return True
         except UnicodeDecodeError:
             print(f"❌ File encoding error: {filepath}")
