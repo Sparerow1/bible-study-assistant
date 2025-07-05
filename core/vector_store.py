@@ -53,6 +53,16 @@ class DocumentProcessor:
         try:
             print("📖 Loading Bible text...")
             data_file = self.get_resource_path(filepath)
+            if os.path.exists(data_file):
+                print("✅ Data file found!")
+            else:
+                print("❌ Data file NOT found!")
+                # List what's actually in the temp directory
+                temp_dir = os.path.dirname(data_file)
+                if os.path.exists(temp_dir):
+                    print(f"Contents of {temp_dir}:")
+                    for item in os.listdir(temp_dir):
+                        print(f"  - {item}")
             loader = TextLoader(data_file)
             documents = loader.load()
             
