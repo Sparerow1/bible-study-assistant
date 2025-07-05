@@ -1,5 +1,5 @@
 import os
-
+from validate.validation import Validation
 
 class BibleQAConfig:
     """Configuration class for Bible Q&A system."""
@@ -59,7 +59,7 @@ class EnvironmentValidator:
     @classmethod
     def validate_file(cls, filepath: str) -> bool:
         """Check if the required Bible text file exists and is readable."""
-        data_file = DocumentProcessor.get_resource_path(filepath)
+        data_file = Validation.get_resource_path(filepath)
         if not os.path.exists(data_file):
             print(f"❌ Error: {data_file} not found!")
             print("💡 Please ensure the Bible text file is in the current directory.")

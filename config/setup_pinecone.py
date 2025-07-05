@@ -1,7 +1,7 @@
 from pinecone import Pinecone, ServerlessSpec
 from langchain_pinecone import PineconeVectorStore
 from typing import Optional, List, Dict, Any
-from validate.validation import Validation
+
 
 class PineconeManager:
     """Manages Pinecone vector database operations."""
