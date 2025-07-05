@@ -52,7 +52,8 @@ class DocumentProcessor:
         """Load and split documents from file."""
         try:
             print("📖 Loading Bible text...")
-            loader = TextLoader(filepath)
+            data_file = self.get_resource_path(filepath)
+            loader = TextLoader(data_file)
             documents = loader.load()
             
             if not documents:
