@@ -57,7 +57,7 @@ PINECONE_INDEX_NAME=langchain-gemini
 Run the interactive chat script:
 
 ```bash
-python biblebot.py
+python main.py
 ```
 
 ## Configuration Options
