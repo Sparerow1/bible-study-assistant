@@ -6,7 +6,7 @@ block_cipher = None
 
 # Get the actual pinecone package path
 pinecone_path = os.path.dirname(pinecone.__file__)
-version_file = os.path.join(/home/yc19a/miniconda3/lib/python3.13/site-packages/pinecone, '__version__')
+version_file = os.path.join(pinecone_path, '__version__')
 
 a = Analysis(
     ['main.py'],
