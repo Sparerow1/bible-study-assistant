@@ -1,12 +1,23 @@
 # -*- mode: python ; coding: utf-8 -*-
+import os
+import pinecone
 
 block_cipher = None
+
+# Get the actual pinecone package path
+pinecone_path = os.path.dirname(pinecone.__file__)
+version_file = os.path.join(/home/yc19a/miniconda3/lib/python3.13/site-packages/pinecone, '__version__')
 
 a = Analysis(
     ['main.py'],
     pathex=['.'],
     binaries=[],
-    datas=[('data/bible_read.txt', 'data'), ('.env', '.')],
+    datas=[
+        ('data/bible_read.txt', 'data'), 
+        ('.env', '.'),
+        # Add Pinecone version file using actual path
+        (version_file, 'pinecone/'),
+    ],
     hiddenimports=[
         'qa',
         'qa.qa_class',
@@ -23,9 +34,17 @@ a = Analysis(
         'langchain_community',
         'langchain_text_splitters',
         'pinecone',
+        'pinecone.core',
+        'pinecone.utils',
+        'pinecone.utils.version',
         'chromadb',
         'google.generativeai',
-        'dotenv'
+        'dotenv',
+        # Additional hidden imports for dependencies
+        'urllib3',
+        'requests',
+        'certifi',
+        'typing_extensions',
     ],
     hookspath=[],
     hooksconfig={},
