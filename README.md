@@ -1,6 +1,8 @@
 # LangChain Gemini Integration
 
-This project demonstrates how to use Google's Gemini AI model with LangChain in Python.
+This project should feature a chatbot that can interact with the Gemini platform, using the LangChain library.
+
+It is specifically trained with vector data from the Bible and other sources, and can provide a simple and engaging interface for users.
 
 ## Features
 
