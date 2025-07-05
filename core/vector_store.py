@@ -39,7 +39,7 @@ class DocumentProcessor:
         """Load and split documents from file."""
         try:
             print("📖 Loading Bible text...")
-            data_file = self.get_resource_path(filepath)
+            data_file = Validation.get_resource_path(filepath)
             if os.path.exists(data_file):
                 print("✅ Data file found!")
             else:
