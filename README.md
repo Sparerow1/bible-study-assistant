@@ -15,9 +15,15 @@ It is specifically trained with vector data from the Bible and other sources, an
 
 ## Using the packaged exe file
 
-Simply go to the left hand side, locate the release section, and download the .zip file
+1. Simply go to the left hand side, locate the releases section
 
-Extract the .zip file, and run the .exe file
+2. Click on Biblebot-1
+
+3. Click on BibleBot-Windows.zip
+
+4. It will download the BibleBot-Windows.zip
+
+5. Extract the .zip file, and run the .exe file
 
 You must use a Windows machine for this to work
 
