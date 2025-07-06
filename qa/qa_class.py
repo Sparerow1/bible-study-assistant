@@ -8,6 +8,7 @@ from config.config_setup_class import BibleQAConfig, EnvironmentValidator
 from config.setup_pinecone import PineconeManager
 from core.vector_store import DocumentProcessor
 from llm.llm_manager import LLMManager
+from validate.validation import Validation
 
 
 class BibleQASystem:
@@ -23,7 +24,15 @@ class BibleQASystem:
         
     def initialize(self) -> bool:
         """Initialize all system components."""
-        load_dotenv()
+        # Load .env from bundled location
+        env_path = Validation.load_env_from_bundle()
+        if env_path:
+            load_dotenv(env_path)
+            print("✅ Environment variables loaded from bundled .env file")
+        else:
+            print("⚠️  No .env file found, using system environment variables")
+            load_dotenv()  # Fallback to default behavior
+        
         print("🚀 Starting Bible Q&A System...")
         print("=" * 50)
         
