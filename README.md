@@ -25,7 +25,7 @@ It is specifically trained with vector data from the Bible and other sources, an
 
 5. Extract the .zip file, and run the .exe file
 
-You must use a Windows machine for this to work
+6. You must use a Windows machine for this to work
 
 ## Setup
 
