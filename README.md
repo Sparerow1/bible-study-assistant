@@ -13,6 +13,14 @@ It is specifically trained with vector data from the Bible and other sources, an
 - Document Q&A with vector embeddings
 - Streaming responses
 
+## Using the packaged exe file
+
+Simply go to the left hand side, locate the release section, and download the .zip file
+
+Extract the .zip file, and run the .exe file
+
+You must use a Windows machine for this to work
+
 ## Setup
 
 ### 1. Install Dependencies
