@@ -61,7 +61,7 @@ class LLMManager:
                 llm=self.llm,
                 retriever=retriever,
                 memory=self.memory,
-                verbose=True,
+                verbose=False,
                 return_source_documents=True,
                 combine_docs_chain_kwargs={"prompt": custom_prompt},
             )
