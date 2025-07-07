@@ -1,5 +1,5 @@
 import os
-from validate.validation import Validation
+from pathHandling.validation import Validation
 
 class BibleQAConfig:
     """Configuration class for Bible Q&A system."""

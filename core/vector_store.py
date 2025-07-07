@@ -4,7 +4,7 @@ from langchain_community.document_loaders import TextLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_pinecone import PineconeVectorStore
 from config.config_setup_class import BibleQAConfig
-from validate.validation import Validation
+from pathHandling.validation import Validation
 import os
 import sys
 import time

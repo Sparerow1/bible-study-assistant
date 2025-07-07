@@ -8,7 +8,7 @@ from config.config_setup_class import BibleQAConfig, EnvironmentValidator
 from config.setup_pinecone import PineconeManager
 from core.vector_store import DocumentProcessor
 from llm.llm_manager import LLMManager
-from validate.validation import Validation
+from pathHandling.validation import Validation
 
 
 class BibleQASystem:
