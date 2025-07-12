@@ -9,7 +9,7 @@ class BibleQAConfig:
         self.chunk_size = 1500
         self.chunk_overlap = 300
         self.batch_size = 30
-        self.retriever_k = 15
+        self.retriever_k = 100
         self.llm_temperature = 0.7
         self.llm_model = "gemini-2.5-flash"
         self.embedding_model = "models/embedding-001"
