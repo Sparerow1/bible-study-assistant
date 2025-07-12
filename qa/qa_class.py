@@ -211,7 +211,7 @@ class BibleQASystem:
             print("❌ Empty response from AI")
             return
         
-        self._display_source_documents(result.get("source_documents", []))
+        # self._display_source_documents(result.get("source_documents", []))
     
     def _display_source_documents(self, sources: List):
         """Display source documents with proper formatting."""
