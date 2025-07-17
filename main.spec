@@ -12,8 +12,7 @@ a = Analysis(
     ['main.py'],
     pathex=['.'],
     binaries=[],
-    datas=[
-        ('data/bible_read.txt', 'data'), 
+    datas=[ 
         ('.env', '.'),
         # Add Pinecone version file using actual path
         (version_file, 'pinecone/'),
