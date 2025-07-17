@@ -6,9 +6,6 @@ class BibleQAConfig:
     
     def __init__(self):
         self.embedding_dimension = 768
-        self.chunk_size = 1500
-        self.chunk_overlap = 300
-        self.batch_size = 30
         self.retriever_k = 305
         self.llm_temperature = 0.7
         self.llm_model = "gemini-2.0-flash-lite"
