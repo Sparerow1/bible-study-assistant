@@ -18,10 +18,7 @@ class BibleQAConfig:
         """Create config from environment variables."""
         config = cls()
         # Override defaults with environment variables if they exist
-        config.chunk_size = int(os.getenv("CHUNK_SIZE", config.chunk_size))
-        config.batch_size = int(os.getenv("BATCH_SIZE", config.batch_size))
         config.retriever_k = int(os.getenv("RETRIEVER_K", config.retriever_k))
-        config.bible_file_path = os.getenv("BIBLE_FILE_PATH", config.bible_file_path)
         return config
 
 
