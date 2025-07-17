@@ -3,10 +3,10 @@ import sys
 import traceback
 from typing import List
 from dotenv import load_dotenv
+from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from langchain_pinecone import PineconeVectorStore
 from config.config_setup_class import BibleQAConfig, EnvironmentValidator
 from config.setup_pinecone import PineconeManager
-from core.vector_store import DocumentProcessor
 from llm.llm_manager import LLMManager
 from pathHandling.validation import Validation
 
@@ -72,9 +72,15 @@ class BibleQASystem:
             print("📊 No existing vectors found.")
         else:
             print(f"✅ Found {vector_count} existing vectors in Pinecone")
-            self.vectorstore = PineconeVectorStore(
+            
+            embeddings = GoogleGenerativeAIEmbeddings(
+                model=self.config.embedding_model,
+                google_api_key=os.getenv("GOOGLE_API_KEY")
+            )
+            
+            self.vectorstore = PineconeVectorStore.from_existing_index(
                 index_name=self.pinecone_manager.index_name,
-                embedding=self.document_processor.embeddings
+                embedding=embeddings
             )
         
         # Create retriever
