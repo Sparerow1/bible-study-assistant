@@ -11,7 +11,7 @@ class BibleQAConfig:
         self.batch_size = 30
         self.retriever_k = 305
         self.llm_temperature = 0.7
-        self.llm_model = "gemini-2.5-pro"
+        self.llm_model = "gemini-2.0-flash-lite"
         self.embedding_model = "models/embedding-001"
         self.bible_file_path = "data/bible_read.txt"
         self.text_separators = ["\n\n", "\n", ". ", " ", ""]

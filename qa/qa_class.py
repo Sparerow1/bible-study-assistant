@@ -40,14 +40,9 @@ class BibleQASystem:
         if not EnvironmentValidator.validate_environment():
             return False
         
-        if not EnvironmentValidator.validate_file(self.config.bible_file_path):
-            return False
         
         # Initialize components
         if not self._initialize_pinecone():
-            return False
-            
-        if not self._initialize_document_processor():
             return False
             
         if not self._setup_vectorstore():
@@ -67,27 +62,14 @@ class BibleQASystem:
             embedding_dimension=self.config.embedding_dimension
         )
         return self.pinecone_manager.initialize()
-    
-    def _initialize_document_processor(self) -> bool:
-        """Initialize document processor with embeddings."""
-        self.document_processor = DocumentProcessor(self.config)
-        return self.document_processor.initialize_embeddings(os.getenv("GOOGLE_API_KEY"))
+
     
     def _setup_vectorstore(self) -> bool:
-        """Setup vectorstore with documents."""
+        """Setup vectorstore with retriever."""
         vector_count = self.pinecone_manager.get_vector_count()
         
         if vector_count == 0:
-            print("📊 No existing vectors found. Loading and uploading documents...")
-            texts = self.document_processor.load_and_split_documents(self.config.bible_file_path)
-            if not texts:
-                return False
-                
-            self.vectorstore = self.document_processor.upload_documents_in_batches(
-                texts, self.pinecone_manager.index_name
-            )
-            if not self.vectorstore:
-                return False
+            print("📊 No existing vectors found.")
         else:
             print(f"✅ Found {vector_count} existing vectors in Pinecone")
             self.vectorstore = PineconeVectorStore(
