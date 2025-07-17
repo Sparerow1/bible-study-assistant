@@ -9,9 +9,9 @@ class BibleQAConfig:
         self.chunk_size = 1500
         self.chunk_overlap = 300
         self.batch_size = 30
-        self.retriever_k = 100
+        self.retriever_k = 305
         self.llm_temperature = 0.7
-        self.llm_model = "gemini-2.5-flash"
+        self.llm_model = "gemini-2.0-flash-lite"
         self.embedding_model = "models/embedding-001"
         self.bible_file_path = "data/bible_read.txt"
         self.text_separators = ["\n\n", "\n", ". ", " ", ""]
