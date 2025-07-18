@@ -124,6 +124,13 @@ In the upload directory, you will find two scripts:
     ```
 - Both files use the .env file to get the API key and the Pinecone environment. So make sure you have edited the .env file with your API key and Pinecone environment.
 
+- To run the scripts, navigate to the upload directory and run the following command:
+
+```bash
+python upload_to_pinecone.py # for uploading txt file
+python pdf_upload.py # for uploading pdf files
+```
+
 ## Troubleshooting
 
 ### "Google API key not found" Error
