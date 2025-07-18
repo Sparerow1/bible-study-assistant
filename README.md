@@ -103,6 +103,9 @@ The bot includes error handling for common issues:
 - Google API key
 - Internet connection
 
+## Uploading file to Pinecone Vector database
+
+
 ## Troubleshooting
 
 ### "Google API key not found" Error
