@@ -104,7 +104,12 @@ The bot includes error handling for common issues:
 - Internet connection
 
 ## Uploading file to Pinecone Vector database
+ 
+The app itself does not have the capability to upload files to the Pinecone vector database. It is an external functionality that needs to be manually run by the user.
 
+In the upload directory, you will find two scripts:
+- `upload_to_pinecone.py` - This script uploads the txt files to the Pinecone vector database.
+- `pdf_upload.py` - This script uploads PDF files to the Pinecone vector database.
 
 ## Troubleshooting
 
