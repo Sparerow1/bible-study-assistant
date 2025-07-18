@@ -89,12 +89,6 @@ When initializing the llm object in the config/config_setup_class.py file, you c
         self.embedding_model = "models/embedding-001" # the embedding model to use
 
 ```
-
-The LLM can be configured with:
-- `temperature` - Response creativity (0.0 to 1.0)
-- `streaming` - Enable streaming responses
-- `convert_system_message_to_human` - Convert system messages for Gemini
-
 ## Error Handling
 
 The bot includes error handling for common issues:
