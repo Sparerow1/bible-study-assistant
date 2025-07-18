@@ -126,4 +126,4 @@ If you hit rate limits, you can:
 2. Implement retry logic
 3. Check your API quota in Google AI Studio
 4. Wait a while before asking the question later
-
+5. If you have exceeded your token limit, try to lower the `retriever_k` parameter in the config file.
