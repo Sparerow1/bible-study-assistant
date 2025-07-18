@@ -122,6 +122,7 @@ In the upload directory, you will find two scripts:
     PDF_DIRECTORY = "content/pdf_files"
     PINECONE_INDEX_NAME = "index-name" # The documents to upload in a single batch.
     ```
+- Both files use the .env file to get the API key and the Pinecone environment. So make sure you have edited the .env file with your API key and Pinecone environment.
 
 ## Troubleshooting
 
