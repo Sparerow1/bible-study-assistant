@@ -111,7 +111,7 @@ In the upload directory, you will find two scripts:
 - `upload_to_pinecone.py` - This script uploads the txt files to the Pinecone vector database.
     - Make sure to specify the txt file and the index name in the script.
     ```python
-        INDEX_NAME = "biblebot-index" 
+        INDEX_NAME = "index-name" 
         # The path to the text file to upload.
         SOURCE_FILE_PATH = "content.txt" # specify the path of the text file
     ```
