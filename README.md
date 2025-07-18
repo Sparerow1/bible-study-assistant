@@ -109,6 +109,9 @@ The app itself does not have the capability to upload files to the Pinecone vect
 
 In the upload directory, you will find two scripts:
 - `upload_to_pinecone.py` - This script uploads the txt files to the Pinecone vector database.
+    - Make sure to specify the txt file and the index name in the script.
+    ```python
+    ```
 - `pdf_upload.py` - This script uploads PDF files to the Pinecone vector database.
 
 ## Troubleshooting
