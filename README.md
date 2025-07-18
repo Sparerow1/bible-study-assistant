@@ -125,4 +125,5 @@ If you hit rate limits, you can:
 1. Add delays between requests
 2. Implement retry logic
 3. Check your API quota in Google AI Studio
+4. Wait a while before asking the question later
 
