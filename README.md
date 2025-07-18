@@ -114,9 +114,9 @@ In the upload directory, you will find two scripts:
         INDEX_NAME = "biblebot-index" 
         # The path to the text file to upload.
         SOURCE_FILE_PATH = "content.txt" # specify the path of the text file
-
     ```
 - `pdf_upload.py` - This script uploads PDF files to the Pinecone vector database.
+    - This file uploads all the pdf files in the directory you have specified.
 
 ## Troubleshooting
 
