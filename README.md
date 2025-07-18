@@ -87,8 +87,6 @@ When initializing the llm object in the config/config_setup_class.py file, you c
         self.llm_temperature = 0.7 # Temperature for response creativity
         self.llm_model = "gemini-2.0-flash-lite" # the llm model to connect to
         self.embedding_model = "models/embedding-001" # the embedding model to use
-        self.bible_file_path = "data/bible_read.txt" # the file path to the bible text
-        self.text_separators = ["\n\n", "\n", ". ", " ", ""] # the separators to split the text into sentences
 
 ```
 
