@@ -120,7 +120,7 @@ In the upload directory, you will find two scripts:
     - You must specify the directory path and the index name in the script.
     ```python
     PDF_DIRECTORY = "content/pdf_files"
-    PINECONE_INDEX_NAME = "index-name" # The number of documents to upload in a single batch.
+    PINECONE_INDEX_NAME = "index-name" # The documents to upload in a single batch.
     ```
 
 ## Troubleshooting
