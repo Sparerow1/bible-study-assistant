@@ -118,6 +118,10 @@ In the upload directory, you will find two scripts:
 - `pdf_upload.py` - This script uploads PDF files to the Pinecone vector database.
     - This file uploads all the pdf files in the directory you have specified.
     - You must specify the directory path and the index name in the script.
+    ```python
+    PDF_DIRECTORY = "content/pdf_files"
+PINECONE_INDEX_NAME = "bible-index-pdf" # The number of documents to upload in a single batch.
+    ```
 
 ## Troubleshooting
 
