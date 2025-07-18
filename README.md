@@ -78,13 +78,10 @@ python main.py
 
 ## Configuration Options
 
-When initializing the llm object, you can pass in the following options:
+When initializing the llm object in the config/config_setup_class.py file, you can pass in the following options:
 
 ```python
-bot = GeminiLangChainBot(
-    api_key="your_key",           # Optional if set in environment
-    model_name="gemini-pro-2.5"       # Model to use; It would be better to use config/config_setup_class.py to set the model name
-)
+
 ```
 
 The LLM can be configured with:
