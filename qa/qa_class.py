@@ -4,7 +4,8 @@ import traceback
 from typing import List
 from dotenv import load_dotenv
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
-from langchain_pinecone import PineconeVectorStore
+from langchain_pinecone import PineconeVectorStore, PineconeRerank
+from langchain.retrievers import ContextualCompressionRetriever
 from config.config_setup_class import BibleQAConfig, EnvironmentValidator
 from config.setup_pinecone import PineconeManager
 from llm.llm_manager import LLMManager
@@ -85,10 +86,22 @@ class BibleQASystem:
         
         # Create retriever
         try:
-            self.retriever = self.vectorstore.as_retriever(
+            base_retriever = self.vectorstore.as_retriever(
                 search_kwargs={"k": self.config.retriever_k},
                 search_type="similarity"
             )
+
+            reranker = PineconeRerank(
+                pinecone_api_key=os.getenv("PINECONE_API_KEY"),
+                model="bge-reranker-v2-m3",
+                top_n=self.config.retriever_k
+            )
+
+            self.retriever = ContextualCompressionRetriever(
+                base_retriever=base_retriever,
+                base_compressor=reranker
+            )
+
             print("✅ Retriever created successfully")
             return True
         except Exception as e:

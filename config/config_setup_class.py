@@ -6,7 +6,7 @@ class BibleQAConfig:
     
     def __init__(self):
         self.embedding_dimension = 768
-        self.retriever_k = 305
+        self.retriever_k = 30
         self.llm_temperature = 0.7
         self.llm_model = "gemini-2.0-flash-lite"
         self.embedding_model = "models/embedding-001"
