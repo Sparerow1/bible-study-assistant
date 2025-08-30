@@ -1,4 +1,4 @@
-from pinecone import Pinecone, ServerlessSpec
+from pinecone import Pinecone
 from langchain_pinecone import PineconeVectorStore
 from typing import Optional, List, Dict, Any
 
@@ -47,7 +47,8 @@ class PineconeManager:
                     name=self.index_name,
                     dimension=self.embedding_dimension,
                     metric="cosine",
-                    spec=ServerlessSpec(cloud="aws", region="us-east-1")
+                    cloud="aws",
+                    region="us-east-1"
                 )
                 print("✅ Index created successfully!")
             else:

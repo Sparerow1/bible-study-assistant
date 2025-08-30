@@ -5,7 +5,7 @@ from langchain_community.document_loaders import TextLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from langchain_pinecone import Pinecone as PineconeVectorStore
-from pinecone import Pinecone, ServerlessSpec
+from pinecone import Pinecone
 from dotenv import load_dotenv
 
 
@@ -30,16 +30,15 @@ def main():
 
     # 2. Create the index if it doesn't exist
     # Google's embedding-001 model produces 768-dimensional vectors.
-    if INDEX_NAME not in pc.list_indexes().names():
+    existing_indexes = [index.name for index in pc.list_indexes()]
+    if INDEX_NAME not in existing_indexes:
         print(f"Creating index '{INDEX_NAME}'...")
         pc.create_index(
             name=INDEX_NAME,
             dimension=768, 
             metric='cosine',
-            spec=ServerlessSpec(
-                cloud='aws',
-                region='us-east-1'
-            )
+            cloud='aws',
+            region='us-east-1'
         )
         print("Index created successfully.")
     else:
