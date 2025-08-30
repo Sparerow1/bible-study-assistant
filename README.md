@@ -68,13 +68,32 @@ PINECONE_INDEX_NAME=langchain-gemini
 ```
 ## Usage
 
-### Bible Chat
+### Bible Chat (Command Line)
 
 Run the interactive chat script:
 
 ```bash
 python main.py
 ```
+
+### Bible Chat (Web Service)
+
+Start the web service for a modern web interface:
+
+```bash
+# Install additional dependencies
+pip install -r requirements.txt
+
+# Start the web service
+python start_web_service.py
+```
+
+Then access:
+- **Web Interface**: http://localhost:8000/web
+- **API Documentation**: http://localhost:8000/docs
+- **Health Check**: http://localhost:8000/health
+
+For detailed web service documentation, see [WEB_SERVICE_README.md](WEB_SERVICE_README.md).
 
 ## Configuration Options
 

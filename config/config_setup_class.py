@@ -2,7 +2,7 @@ import os
 from pathHandling.validation import Validation
 
 class BibleQAConfig:
-    """Configuration class for Bible Q&A system."""
+    """Configuration class for Bible Q&A system"""
     
     def __init__(self):
         self.embedding_dimension = 768

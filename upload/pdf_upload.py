@@ -1,6 +1,6 @@
 import os
 from dotenv import load_dotenv
-from pinecone import Pinecone, ServerlessSpec
+from pinecone import Pinecone
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from langchain_community.document_loaders import PyPDFLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
@@ -26,16 +26,15 @@ def setup_pinecone():
     
     pc = Pinecone(api_key=PINECONE_API_KEY)
     
-    if PINECONE_INDEX_NAME not in pc.list_indexes().names():
+    existing_indexes = [index.name for index in pc.list_indexes()]
+    if PINECONE_INDEX_NAME not in existing_indexes:
         print(f"Creating index '{PINECONE_INDEX_NAME}'...")
         pc.create_index(
             name=PINECONE_INDEX_NAME,
             dimension=EMBEDDING_DIMENSION,
             metric="cosine",
-            spec=ServerlessSpec(
-                cloud='aws',
-                region='us-east-1'
-            )
+            cloud='aws',
+            region='us-east-1'
         )
         # Wait for index to be ready
         while not pc.describe_index(PINECONE_INDEX_NAME).status['ready']:
