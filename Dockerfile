@@ -2,10 +2,15 @@ FROM python:3.11-slim
 
 # Install PHP and required extensions
 RUN apt-get update && apt-get install -y \
-    php8.1 \
-    php8.1-curl \
-    php8.1-json \
-    php8.1-mbstring \
+    software-properties-common \
+    lsb-release \
+    ca-certificates \
+    apt-transport-https \
+    && apt-get install -y \
+    php \
+    php-curl \
+    php-json \
+    php-mbstring \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
