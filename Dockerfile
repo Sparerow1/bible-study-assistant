@@ -21,8 +21,6 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip3 install --no-cache-dir -r requirements.txt
 
-# Copy .env file first
-COPY .env .
 
 # Copy application code
 COPY . .
