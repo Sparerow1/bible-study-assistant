@@ -564,21 +564,7 @@ function makeApiRequest($url, $data = null, $method = 'POST') {
             messageContent.className = 'message-content';
             messageContent.innerHTML = content.replace(/\n/g, '<br>');
             
-            // Add sources if available
-            if (sources && sources.length > 0) {
-                const sourcesDiv = document.createElement('div');
-                sourcesDiv.className = 'sources';
-                sourcesDiv.innerHTML = '<h4>📚 Biblical References:</h4>';
-                
-                sources.forEach((source, index) => {
-                    const sourceItem = document.createElement('div');
-                    sourceItem.className = 'source-item';
-                    sourceItem.textContent = `${index + 1}. ${source.content}`;
-                    sourcesDiv.appendChild(sourceItem);
-                });
-                
-                messageContent.appendChild(sourcesDiv);
-            }
+            // Sources display removed - no longer showing sources
             
             messageDiv.appendChild(avatar);
             messageDiv.appendChild(messageContent);
