@@ -123,9 +123,20 @@ async def web_interface():
     """Serve the PHP web interface."""
     return await serve_php_file("php_frontend/index.php")
 
+@app.post("/web")
+async def web_interface_post():
+    """Serve the PHP web interface for POST requests."""
+    return await serve_php_file("php_frontend/index.php")
+
 @app.get("/web/{path:path}")
 async def web_interface_path(path: str):
     """Serve PHP files from the web interface."""
+    php_file_path = f"php_frontend/{path}"
+    return await serve_php_file(php_file_path)
+
+@app.post("/web/{path:path}")
+async def web_interface_path_post(path: str):
+    """Serve PHP files from the web interface for POST requests."""
     php_file_path = f"php_frontend/{path}"
     return await serve_php_file(php_file_path)
 
