@@ -21,17 +21,14 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip3 install --no-cache-dir -r requirements.txt
 
+# Copy .env file first
+COPY .env .
+
 # Copy application code
 COPY . .
 
 EXPOSE 8000
 ENV PORT=8000
 ENV HOST=0.0.0.0
-
-# Set default environment variables (override these in Render dashboard)
-ENV GOOGLE_API_KEY=""
-ENV PINECONE_API_KEY=""
-ENV PINECONE_ENVIRONMENT=""
-ENV PINECONE_INDEX_NAME=""
 
 CMD ["python3", "start_web_service.py"]
