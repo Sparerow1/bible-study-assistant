@@ -20,7 +20,7 @@ A modern chatbot system that provides intelligent answers to biblical questions 
 - **Vector Database**: Pinecone or Chroma for semantic search
 - **Frontend Options**:
   - Built-in HTML interface (served by FastAPI)
-  - Separate PHP frontend (optional)
+  - Separate PHP frontend served by FastAPI (optional)
 - **Deployment**: Docker container with both Python and PHP support
 
 ## Quick Start
