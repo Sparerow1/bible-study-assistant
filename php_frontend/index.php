@@ -588,7 +588,7 @@ function makeApiRequest($url, $data = null, $method = 'POST') {
             messageContent.className = 'message-content';
             messageContent.innerHTML = `
                 <div class="loading">
-                    <span>Thinking</span>
+                    <span>思考中...</span>
                     <div class="loading-dots">
                         <span></span>
                         <span></span>
