@@ -2,8 +2,9 @@ import os
 import sys
 import traceback
 import subprocess
+import json
 from typing import List, Optional
-from fastapi import FastAPI, HTTPException, BackgroundTasks, Request
+from fastapi import FastAPI, HTTPException, BackgroundTasks, Request, Form
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse, Response
@@ -124,9 +125,22 @@ async def web_interface():
     return await serve_php_file("php_frontend/index.php")
 
 @app.post("/web")
-async def web_interface_post():
-    """Serve the PHP web interface for POST requests."""
-    return await serve_php_file("php_frontend/index.php")
+async def web_interface_post(request: Request):
+    """Handle PHP form submissions directly."""
+    form_data = await request.form()
+    action = form_data.get('action')
+    
+    if action == 'chat':
+        return await handle_php_chat(form_data)
+    elif action == 'health':
+        return await handle_php_health()
+    elif action == 'stats':
+        return await handle_php_stats()
+    elif action == 'clear_memory':
+        return await handle_php_clear_memory()
+    else:
+        # Fall back to PHP execution for other cases
+        return await serve_php_file("php_frontend/index.php")
 
 @app.get("/web/{path:path}")
 async def web_interface_path(path: str):
@@ -135,10 +149,140 @@ async def web_interface_path(path: str):
     return await serve_php_file(php_file_path)
 
 @app.post("/web/{path:path}")
-async def web_interface_path_post(path: str):
-    """Serve PHP files from the web interface for POST requests."""
+async def web_interface_path_post(path: str, request: Request):
+    """Handle PHP form submissions for specific paths."""
+    form_data = await request.form()
+    action = form_data.get('action')
+    
+    if action in ['chat', 'health', 'stats', 'clear_memory']:
+        if action == 'chat':
+            return await handle_php_chat(form_data)
+        elif action == 'health':
+            return await handle_php_health()
+        elif action == 'stats':
+            return await handle_php_stats()
+        elif action == 'clear_memory':
+            return await handle_php_clear_memory()
+    
+    # Fall back to PHP execution for other cases
     php_file_path = f"php_frontend/{path}"
     return await serve_php_file(php_file_path)
+
+async def handle_php_chat(form_data):
+    """Handle chat requests from PHP frontend."""
+    message = form_data.get('message', '')
+    session_id = form_data.get('session_id', 'php_session')
+    
+    if not message.strip():
+        return Response(
+            content=json.dumps({'error': 'Message cannot be empty'}),
+            media_type="application/json"
+        )
+    
+    try:
+        # Process the question using the existing LLM manager
+        result = bible_qa_system.llm_manager.process_question(message)
+        
+        if not result or "answer" not in result:
+            return Response(
+                content=json.dumps({'error': 'No response generated'}),
+                media_type="application/json"
+            )
+        
+        # Extract source documents if available
+        sources = []
+        if "source_documents" in result:
+            for doc in result["source_documents"]:
+                sources.append({
+                    "content": doc.page_content[:200] + "..." if len(doc.page_content) > 200 else doc.page_content,
+                    "metadata": getattr(doc, 'metadata', {})
+                })
+        
+        response_data = {
+            "answer": result["answer"],
+            "session_id": session_id,
+            "sources": sources if sources else None
+        }
+        
+        return Response(
+            content=json.dumps(response_data),
+            media_type="application/json"
+        )
+        
+    except Exception as e:
+        print(f"❌ Error processing chat request: {e}")
+        return Response(
+            content=json.dumps({'error': f'Error processing request: {str(e)}'}),
+            media_type="application/json"
+        )
+
+async def handle_php_health():
+    """Handle health check requests from PHP frontend."""
+    try:
+        vector_count = bible_qa_system.pinecone_manager.get_vector_count()
+        response_data = {
+            "status": "healthy",
+            "message": "BibleBot API is running",
+            "vector_count": vector_count
+        }
+        return Response(
+            content=json.dumps(response_data),
+            media_type="application/json"
+        )
+    except Exception as e:
+        response_data = {
+            "status": "error",
+            "message": f"Service error: {str(e)}"
+        }
+        return Response(
+            content=json.dumps(response_data),
+            media_type="application/json"
+        )
+
+async def handle_php_stats():
+    """Handle stats requests from PHP frontend."""
+    try:
+        stats = bible_qa_system.pinecone_manager.get_stats()
+        if stats:
+            response_data = {
+                "total_vectors": stats.total_vector_count,
+                "dimension": stats.dimension,
+                "index_name": bible_qa_system.pinecone_manager.index_name
+            }
+            return Response(
+                content=json.dumps(response_data),
+                media_type="application/json"
+            )
+        else:
+            return Response(
+                content=json.dumps({'error': 'Failed to retrieve stats'}),
+                media_type="application/json"
+            )
+    except Exception as e:
+        return Response(
+            content=json.dumps({'error': f'Error getting stats: {str(e)}'}),
+            media_type="application/json"
+        )
+
+async def handle_php_clear_memory():
+    """Handle clear memory requests from PHP frontend."""
+    try:
+        success = bible_qa_system.llm_manager.clear_memory()
+        if success:
+            return Response(
+                content=json.dumps({"message": "Memory cleared successfully"}),
+                media_type="application/json"
+            )
+        else:
+            return Response(
+                content=json.dumps({'error': 'Failed to clear memory'}),
+                media_type="application/json"
+            )
+    except Exception as e:
+        return Response(
+            content=json.dumps({'error': f'Error clearing memory: {str(e)}'}),
+            media_type="application/json"
+        )
 
 async def serve_php_file(php_file_path: str):
     """Execute PHP file and return the result."""
@@ -147,13 +291,19 @@ async def serve_php_file(php_file_path: str):
         if not os.path.exists(php_file_path):
             raise HTTPException(status_code=404, detail="File not found")
         
+        # Set up environment variables for PHP
+        php_env = os.environ.copy()
+        
+        # Set FastAPI server URL for PHP to use
+        php_env['API_BASE_URL'] = 'http://localhost:8000'
+        
         # Execute PHP file
         result = subprocess.run(
             ["php", php_file_path],
             capture_output=True,
             text=True,
             cwd=os.getcwd(),
-            env=os.environ.copy()
+            env=php_env
         )
         
         if result.returncode != 0:

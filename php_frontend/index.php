@@ -43,22 +43,23 @@ function handleChatRequest() {
         'session_id' => $_POST['session_id'] ?? getConfig('SESSION_ID')
     ];
     
-    $response = makeApiRequest(getConfig('API_BASE_URL') . '/chat', $data);
+    // Make request to FastAPI backend
+    $response = makeApiRequest('http://localhost:8000/chat', $data);
     echo $response;
 }
 
 function handleHealthCheck() {
-    $response = makeApiRequest(getConfig('API_BASE_URL') . '/health', null, 'GET');
+    $response = makeApiRequest('http://localhost:8000/health', null, 'GET');
     echo $response;
 }
 
 function handleStatsRequest() {
-    $response = makeApiRequest(getConfig('API_BASE_URL') . '/stats', null, 'GET');
+    $response = makeApiRequest('http://localhost:8000/stats', null, 'GET');
     echo $response;
 }
 
 function handleClearMemory() {
-    $response = makeApiRequest(getConfig('API_BASE_URL') . '/clear-memory', null, 'POST');
+    $response = makeApiRequest('http://localhost:8000/clear-memory', null, 'POST');
     echo $response;
 }
 
