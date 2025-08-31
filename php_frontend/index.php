@@ -73,9 +73,11 @@ function makeApiRequest($url, $data = null, $method = 'POST') {
         'Accept: application/json'
     ]);
     
-    if ($method === 'POST' && $data) {
+    if ($method === 'POST') {
         curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+        if ($data) {
+            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+        }
     }
     
     $response = curl_exec($ch);
