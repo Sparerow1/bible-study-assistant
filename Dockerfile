@@ -1,13 +1,12 @@
 FROM ubuntu:22.04
 
-# Install Python and PHP
+# Install Python and PHP with correct package names
 RUN apt-get update && apt-get install -y \
-    python3.11 \
-    python3.11-pip \
-    python3.11-venv \
+    python3 \
+    python3-pip \
+    python3-venv \
     php8.1 \
     php8.1-curl \
-    php8.1-json \
     php8.1-mbstring \
     && rm -rf /var/lib/apt/lists/*
 
