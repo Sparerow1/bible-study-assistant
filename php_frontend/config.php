@@ -21,8 +21,8 @@ define('RATE_LIMIT_REQUESTS', 10); // Requests per minute
 define('RATE_LIMIT_WINDOW', 60); // Time window in seconds
 
 // UI Configuration
-define('CHAT_TITLE', 'BibleBot (PHP)');
-define('CHAT_SUBTITLE', 'Your AI-powered Biblical Q&A Assistant');
+define('CHAT_TITLE', '圣经学习助手');
+define('CHAT_SUBTITLE', '你的AI圣经学习助手');
 
 // Feature Flags
 define('ENABLE_STATS', true);

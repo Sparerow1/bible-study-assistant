@@ -369,8 +369,8 @@ function makeApiRequest($url, $data = null, $method = 'POST') {
     <div class="chat-container">
         <div class="header">
             <div class="status-indicator" id="statusIndicator"></div>
-            <div class="stats" id="stats">Loading...</div>
-            <button class="clear-button" onclick="clearMemory()">Clear Memory</button>
+            <div class="stats" id="stats">加载中...</div>
+            <button class="clear-button" onclick="clearMemory()">清空记忆</button>
             <h1>📖 <?php echo getConfig('CHAT_TITLE'); ?></h1>
             <p><?php echo getConfig('CHAT_SUBTITLE'); ?></p>
         </div>
@@ -385,8 +385,8 @@ function makeApiRequest($url, $data = null, $method = 'POST') {
         </div>
 
         <div class="chat-input">
-            <input type="text" id="messageInput" placeholder="Ask me about the Bible..." onkeypress="handleKeyPress(event)">
-            <button onclick="sendMessage()" id="sendButton">Send</button>
+            <input type="text" id="messageInput" placeholder="问我关于圣经、神学或灵修的问题..." onkeypress="handleKeyPress(event)">
+            <button onclick="sendMessage()" id="sendButton">发送</button>
         </div>
     </div>
 
