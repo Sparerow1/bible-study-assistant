@@ -351,7 +351,7 @@ function makeApiRequest($url, $data = null, $method = 'POST') {
             top: 20px;
             right: 50px;
             background: rgba(255, 255, 255, 0.2);
-            color: white;
+            color: black;
             border: none;
             padding: 8px 12px;
             border-radius: 5px;
