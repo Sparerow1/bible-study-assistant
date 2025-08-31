@@ -1,47 +1,74 @@
-# LangChain Gemini Integration
+# BibleBot - AI-Powered Biblical Q&A System
 
-This project should feature a chatbot that can interact with the Gemini platform, using the LangChain library.
-
-It is specifically trained with vector data from the Bible and other sources, and can provide a simple and engaging interface for users.
+A modern chatbot system that provides intelligent answers to biblical questions using LangChain, Google Gemini, and vector embeddings. Features a FastAPI backend with both HTML and PHP frontend options.
 
 ## Features
 
-- Simple chat interactions with Gemini
-- Conversation memory
-- Custom system prompts
-- Prompt templates
-- Document Q&A with vector embeddings
-- Streaming responses
+- **AI-Powered Q&A**: Intelligent responses using Google Gemini 2.0 Flash Lite
+- **Vector Search**: Semantic search through biblical content using embeddings
+- **Modern Web Interface**: Beautiful, responsive chat UI with real-time communication
+- **Multiple Frontends**: Choose between HTML (built-in) or PHP frontend
+- **Conversation Memory**: Maintains context across chat sessions
+- **Source References**: Displays biblical references and sources for answers
+- **Health Monitoring**: Real-time status indicators and health checks
+- **Statistics Display**: Shows vector count and dimension information
+- **Docker Support**: Easy deployment with Docker containerization
 
-## Using the packaged exe file
+## Architecture
 
-1. Simply go to the left hand side, locate the releases section
+- **Backend**: FastAPI (Python) with LangChain and Gemini integration
+- **Vector Database**: Pinecone or Chroma for semantic search
+- **Frontend Options**:
+  - Built-in HTML interface (served by FastAPI)
+  - Separate PHP frontend (optional)
+- **Deployment**: Docker container with both Python and PHP support
 
-2. Click on Biblebot-1
+## Quick Start
 
-3. Click on BibleBot-Windows.zip
+### Using Docker (Recommended)
 
-4. It will download the BibleBot-Windows.zip
+1. **Clone the repository**:
+   ```bash
+   git clone <repository-url>
+   cd biblebot
+   ```
 
-5. Extract the .zip file, and run the .exe file
+2. **Configure environment**:
+   ```bash
+   cp .env.example .env
+   ```
+   Edit `.env` and add your Google API key:
+   ```
+   GOOGLE_API_KEY=your_actual_api_key_here
+   ```
 
-6. You must use a Windows machine for this to work
+3. **Build and run with Docker**:
+   ```bash
+   docker build -t biblebot .
+   docker run -p 8000:8000 --env-file .env biblebot
+   ```
 
-## Setup
+4. **Access the application**:
+   - **FastAPI Backend**: http://localhost:8000
+   - **HTML Frontend**: http://localhost:8000/web
+   - **API Documentation**: http://localhost:8000/docs
+   - **PHP Frontend**: http://localhost:8080 (see PHP setup below)
 
-### 1. Install Dependencies
+### Manual Setup
+
+#### 1. Install Dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### 2. Get Google API Key
+#### 2. Get Google API Key
 
 1. Go to [Google AI Studio](https://makersuite.google.com/app/apikey)
 2. Create a new API key
 3. Copy the API key
 
-### 3. Configure Environment
+#### 3. Configure Environment
 
 Copy the example environment file and add your API key:
 
@@ -54,21 +81,39 @@ Edit `.env` and replace `your_google_api_key_here` with your actual API key:
 ```
 GOOGLE_API_KEY=your_actual_api_key_here
 ```
-If you are using Chroma, ignore the next step. Follow only if you are using Pinecone for vector database.
 
+If using Pinecone for vector database (optional):
 ```
-# Get your Pinecone API key from: https://app.pinecone.io/
 PINECONE_API_KEY=your_pinecone_api_key_here
-
-# Pinecone environment (region) - check your Pinecone dashboard
 PINECONE_ENVIRONMENT=us-east-1-aws
-
-# Pinecone index name (will be created automatically)
 PINECONE_INDEX_NAME=langchain-gemini
 ```
+
+#### 4. Start the FastAPI Backend
+
+```bash
+python start_web_service.py
+```
+
+The FastAPI server will be available at:
+- **Web Interface**: http://localhost:8000/web
+- **API Documentation**: http://localhost:8000/docs
+- **Health Check**: http://localhost:8000/health
+
+#### 5. Optional: Setup PHP Frontend
+
+For a separate PHP frontend:
+
+```bash
+cd php_frontend
+php -S localhost:8080
+```
+
+Then access the PHP frontend at http://localhost:8080
+
 ## Usage
 
-### Bible Chat (Command Line)
+### Command Line Interface
 
 Run the interactive chat script:
 
@@ -76,102 +121,143 @@ Run the interactive chat script:
 python main.py
 ```
 
-### Bible Chat (Web Service)
+### Web Interface
 
-Start the web service for a modern web interface:
+1. **HTML Frontend** (built-in): Access http://localhost:8000/web
+2. **PHP Frontend** (optional): Access http://localhost:8080
 
-```bash
-# Install additional dependencies
-pip install -r requirements.txt
+Both frontends provide:
+- Real-time chat interface
+- Health status monitoring
+- Vector database statistics
+- Memory management
+- Source reference display
 
-# Start the web service
-python start_web_service.py
-```
+### API Endpoints
 
-Then access:
-- **Web Interface**: http://localhost:8000/web
-- **API Documentation**: http://localhost:8000/docs
-- **Health Check**: http://localhost:8000/health
+The FastAPI backend provides these endpoints:
 
-For detailed web service documentation, see [WEB_SERVICE_README.md](WEB_SERVICE_README.md).
+- `GET /` - Health check
+- `GET /health` - Detailed health status
+- `GET /stats` - Vector database statistics
+- `POST /chat` - Send chat messages
+- `POST /clear-memory` - Clear conversation memory
+- `GET /docs` - Interactive API documentation
 
-## Configuration Options
+## Configuration
 
-When initializing the llm object in the config/config_setup_class.py file, you can pass in the following options:
+### Backend Configuration
+
+Edit `config/config_setup_class.py` to customize:
 
 ```python
-    def __init__(self):
-        self.embedding_dimension = 768 # Dimension of the embedding vectors
-        self.retriever_k = 15  # number of records to retrieve from the database
-        self.llm_temperature = 0.7 # Temperature for response creativity
-        self.llm_model = "gemini-2.0-flash-lite" # the llm model to connect to
-        self.embedding_model = "models/embedding-001" # the embedding model to use
-
+def __init__(self):
+    self.embedding_dimension = 768  # Dimension of embedding vectors
+    self.retriever_k = 15          # Number of records to retrieve
+    self.llm_temperature = 0.7     # Response creativity
+    self.llm_model = "gemini-2.0-flash-lite"  # LLM model
+    self.embedding_model = "models/embedding-001"  # Embedding model
 ```
-## Error Handling
 
-The bot includes error handling for common issues:
-- Missing API key
-- Network errors
-- Invalid model names
-- Rate limiting
+### PHP Frontend Configuration
 
-## Requirements
+Edit `php_frontend/config.php` to customize:
 
-- Python 3.8+
-- Google API key
-- Internet connection
+```php
+define('API_BASE_URL', 'http://localhost:8000');  // FastAPI server URL
+define('CHAT_TITLE', 'BibleBot (PHP)');
+define('API_TIMEOUT', 30);
+```
 
-## Uploading file to Pinecone Vector database
- 
-The app itself does not have the capability to upload files to the Pinecone vector database. It is an external functionality that needs to be manually run by the user.
+## Vector Database Setup
 
-In the upload directory, you will find two scripts:
-- `upload_to_pinecone.py` - This script uploads the txt files to the Pinecone vector database.
-    - Make sure to specify the txt file and the index name in the script.
-    ```python
-        INDEX_NAME = "index-name" 
-        # The path to the text file to upload.
-        SOURCE_FILE_PATH = "content.txt" # specify the path of the text file
-    ```
-- `pdf_upload.py` - This script uploads PDF files to the Pinecone vector database.
-    - This file uploads all the pdf files in the directory you have specified.
-    - You must specify the directory path and the index name in the script.
-    ```python
-    PDF_DIRECTORY = "content/pdf_files"
-    PINECONE_INDEX_NAME = "index-name" # The documents to upload in a single batch.
-    ```
-- Both files use the .env file to get the API key and the Pinecone environment. So make sure you have edited the .env file with your API key and Pinecone environment.
+### Uploading Content
 
-- To run the scripts, navigate to the upload directory and run the following command:
+The app includes scripts to upload content to your vector database:
+
+#### Text Files
+```bash
+cd upload
+python upload_to_pinecone.py
+```
+Edit the script to specify your file and index name.
+
+#### PDF Files
+```bash
+cd upload
+python pdf_upload.py
+```
+Edit the script to specify your directory and index name.
+
+### Database Options
+
+- **Chroma** (default): Local vector database, no additional setup required
+- **Pinecone**: Cloud vector database, requires API key and environment setup
+
+## Deployment
+
+### Production Deployment
+
+1. **Environment Variables**: Set production environment variables
+2. **CORS Configuration**: Update CORS settings in `api/main.py`
+3. **Security**: Disable debug mode and enable rate limiting
+4. **Web Server**: Use a production web server (Nginx, Apache) for PHP frontend
+
+### Docker Deployment
 
 ```bash
-python upload_to_pinecone.py # for uploading txt file
-python pdf_upload.py # for uploading pdf files
+# Build production image
+docker build -t biblebot:latest .
+
+# Run with environment file
+docker run -d -p 8000:8000 --env-file .env --name biblebot biblebot:latest
 ```
 
 ## Troubleshooting
 
-### "Google API key not found" Error
+### Common Issues
 
-Make sure you have:
-1. Created a `.env` file with your API key
-2. Set the `GOOGLE_API_KEY` environment variable
-3. Or passed the API key directly to the constructor
+1. **"Google API key not found"**: Ensure `.env` file exists with correct API key
+2. **Import Errors**: Install all dependencies with `pip install -r requirements.txt`
+3. **Rate Limiting**: Check API quota in Google AI Studio or reduce `retriever_k` parameter
+4. **PHP Frontend Issues**: Ensure cURL extension is enabled and API_BASE_URL is correct
 
-### Import Errors
+### Debug Mode
 
-Install all dependencies:
+Enable debug mode by setting environment variable:
 ```bash
-pip install -r requirements.txt
-pip install -r requirements-dev.txt
+export DEBUG=true
 ```
 
-### Rate Limiting
+### Logs
 
-If you hit rate limits, you can:
-1. Add delays between requests
-2. Implement retry logic
-3. Check your API quota in Google AI Studio
-4. Wait a while before asking the question later
-5. If you have exceeded your token limit, try to lower the `retriever_k` parameter in the config file.
+- **FastAPI Logs**: Check console output when running `start_web_service.py`
+- **PHP Logs**: Check web server error logs or enable logging in `config.php`
+
+## Requirements
+
+- Python 3.8+
+- PHP 7.4+ (for PHP frontend)
+- Google API key
+- Internet connection
+- Optional: Pinecone API key for cloud vector database
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Test thoroughly
+5. Submit a pull request
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## Support
+
+For issues and questions:
+1. Check the troubleshooting section above
+2. Review the API documentation at http://localhost:8000/docs
+3. Check the PHP frontend README in `php_frontend/README.md`
+4. Create an issue in the repository
