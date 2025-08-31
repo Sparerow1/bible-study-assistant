@@ -1,5 +1,9 @@
 FROM ubuntu:22.04
 
+# Set timezone non-interactively
+ENV DEBIAN_FRONTEND=noninteractive
+ENV TZ=America/New_York
+
 # Install Python and PHP with correct package names
 RUN apt-get update && apt-get install -y \
     python3 \
@@ -8,6 +12,7 @@ RUN apt-get update && apt-get install -y \
     php8.1 \
     php8.1-curl \
     php8.1-mbstring \
+    tzdata \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
