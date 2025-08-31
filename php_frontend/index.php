@@ -107,7 +107,7 @@ function makeApiRequest($url, $data = null, $method = 'POST') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo getConfig('CHAT_TITLE'); ?> - Biblical Q&A Assistant</title>
+    <title><?php echo getConfig('CHAT_TITLE'); ?> - 圣经学习助手</title>
     <style>
         * {
             margin: 0;
@@ -379,7 +379,7 @@ function makeApiRequest($url, $data = null, $method = 'POST') {
             <div class="message bot">
                 <div class="message-avatar">🤖</div>
                 <div class="message-content">
-                    Hello! I'm your BibleBot assistant. I'm here to help you explore and understand the Bible. Ask me any questions about scripture, theology, or spiritual guidance!
+                    你好！我是你的圣经学习助手。我在这里帮助你探索和理解圣经。问我任何关于圣经、神学或灵修的问题！
                 </div>
             </div>
         </div>
