@@ -1,15 +1,15 @@
 <?php
 // BibleBot PHP Frontend Configuration
 
-// FastAPI Server Configuration
-define('API_BASE_URL', 'http://localhost:8000'); // Change this to your FastAPI server URL
+// FastAPI Server Configuration - Updated for internal communication
+define('API_BASE_URL', 'http://localhost:8000'); // FastAPI server (same port)
 define('API_TIMEOUT', 30); // Request timeout in seconds
 
 // Session Configuration
 define('SESSION_ID', 'php_session');
 
 // Error Reporting (set to false in production)
-define('DEBUG_MODE', true);
+define('DEBUG_MODE', false);
 
 // CORS Headers (if needed)
 define('ALLOW_CORS', true);
@@ -31,7 +31,7 @@ define('ENABLE_MEMORY_CLEAR', true);
 define('ENABLE_SOURCES', true);
 
 // Logging Configuration
-define('LOG_ENABLED', false);
+define('LOG_ENABLED', true);
 define('LOG_FILE', 'biblebot_php.log');
 
 // Helper function to get configuration

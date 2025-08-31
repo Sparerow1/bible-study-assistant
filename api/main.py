@@ -1,11 +1,12 @@
 import os
 import sys
 import traceback
+import subprocess
 from typing import List, Optional
-from fastapi import FastAPI, HTTPException, BackgroundTasks
+from fastapi import FastAPI, HTTPException, BackgroundTasks, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, Response
 from pydantic import BaseModel
 from dotenv import load_dotenv
 
@@ -119,8 +120,46 @@ async def health_check():
 
 @app.get("/web")
 async def web_interface():
-    """Serve the web interface."""
-    return FileResponse("api/static/index.html")
+    """Serve the PHP web interface."""
+    return await serve_php_file("php_frontend/index.php")
+
+@app.get("/web/{path:path}")
+async def web_interface_path(path: str):
+    """Serve PHP files from the web interface."""
+    php_file_path = f"php_frontend/{path}"
+    return await serve_php_file(php_file_path)
+
+async def serve_php_file(php_file_path: str):
+    """Execute PHP file and return the result."""
+    try:
+        # Check if file exists
+        if not os.path.exists(php_file_path):
+            raise HTTPException(status_code=404, detail="File not found")
+        
+        # Execute PHP file
+        result = subprocess.run(
+            ["php", php_file_path],
+            capture_output=True,
+            text=True,
+            cwd=os.getcwd(),
+            env=os.environ.copy()
+        )
+        
+        if result.returncode != 0:
+            print(f"PHP Error: {result.stderr}")
+            raise HTTPException(status_code=500, detail="PHP execution error")
+        
+        # Return the PHP output
+        return Response(
+            content=result.stdout,
+            media_type="text/html"
+        )
+        
+    except FileNotFoundError:
+        raise HTTPException(status_code=404, detail="PHP interpreter not found")
+    except Exception as e:
+        print(f"Error serving PHP file: {e}")
+        raise HTTPException(status_code=500, detail="Internal server error")
 
 @app.get("/stats", response_model=StatsResponse)
 async def get_stats():
