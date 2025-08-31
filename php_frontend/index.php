@@ -368,8 +368,6 @@ function makeApiRequest($url, $data = null, $method = 'POST') {
 <body>
     <div class="chat-container">
         <div class="header">
-            <div class="status-indicator" id="statusIndicator"></div>
-            <div class="stats" id="stats">加载中...</div>
             <button class="clear-button" onclick="clearMemory()">清空记忆</button>
             <h1>📖 <?php echo getConfig('CHAT_TITLE'); ?></h1>
             <p><?php echo getConfig('CHAT_SUBTITLE'); ?></p>
